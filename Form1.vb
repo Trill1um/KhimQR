@@ -20,4 +20,39 @@ Public Class Form1
             PictureBox1.Image = Nothing
         End Try
     End Sub
+
+    Sub AutoNumber()
+        Const prefix As String = "MAR"
+        str = "SELECT MAX(NewNumber) FROM Autonumber WHERE pfx = @pfx"
+
+        Dim currentNumber As Object
+        Using autoCmd As New SqlCommand(str, sqlconn)
+            autoCmd.Parameters.AddWithValue("@pfx", prefix)
+            currentNumber = autoCmd.ExecuteScalar()
+        End Using
+
+        If currentNumber Is Nothing OrElse currentNumber Is DBNull.Value Then
+            CreateNewAutoNumber()
+
+            Using refreshCmd As New SqlCommand(str, sqlconn)
+                refreshCmd.Parameters.AddWithValue("@pfx", prefix)
+                Dim generatedNumber = refreshCmd.ExecuteScalar()
+                TextBox1.Text = If(generatedNumber Is Nothing OrElse generatedNumber Is DBNull.Value, String.Empty, Convert.ToString(generatedNumber))
+            End Using
+        Else
+            TextBox1.Text = Convert.ToString(currentNumber)
+        End If
+    End Sub
+
+    Sub CreateNewAutoNumber()
+        Try
+            Using autoNoCmd As New SqlCommand("SP_AutoNo_AMS", sqlconn)
+                autoNoCmd.CommandType = CommandType.StoredProcedure
+                autoNoCmd.Parameters.AddWithValue("@pfx", "MAR")
+                autoNoCmd.ExecuteNonQuery()
+            End Using
+        Catch ex As Exception
+            MsgBox(ex.Message)
+        End Try
+    End Sub
 End Class
