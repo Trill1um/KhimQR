@@ -6,8 +6,10 @@ Public Class AdminForm
     Private ReadOnly tabControl As New TabControl()
     Private ReadOnly studentsPage As New TabPage("Students")
     Private ReadOnly autonumberPage As New TabPage("Autonumber")
+    Private ReadOnly attendancePage As New TabPage("Attendance")
     Private ReadOnly studentsGrid As New DataGridView()
     Private ReadOnly autonumberGrid As New DataGridView()
+    Private ReadOnly attendanceGrid As New DataGridView()
     Private ReadOnly refreshButton As New Button()
 
     Public Sub New()
@@ -30,12 +32,15 @@ Public Class AdminForm
 
         ConfigureGrid(studentsGrid)
         ConfigureGrid(autonumberGrid)
+        ConfigureGrid(attendanceGrid)
 
         studentsPage.Controls.Add(studentsGrid)
         autonumberPage.Controls.Add(autonumberGrid)
+        attendancePage.Controls.Add(attendanceGrid)
 
         tabControl.TabPages.Add(studentsPage)
         tabControl.TabPages.Add(autonumberPage)
+        tabControl.TabPages.Add(attendancePage)
 
         Controls.Add(refreshButton)
         Controls.Add(tabControl)
@@ -70,6 +75,7 @@ Public Class AdminForm
 
             LoadStudents()
             LoadAutonumber()
+            LoadAttendance()
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Admin", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
         End Try
@@ -99,5 +105,18 @@ Public Class AdminForm
         End Using
 
         autonumberGrid.DataSource = table
+    End Sub
+
+    Private Sub LoadAttendance()
+        Dim table As New DataTable()
+        Const sql As String = "SELECT RecNumber, StudentID, Date_STAMP, TimeIN FROM Attendance ORDER BY RecNumber DESC"
+
+        Using cmd As New SqliteCommand(sql, sqlconn)
+            Using reader = cmd.ExecuteReader()
+                table.Load(reader)
+            End Using
+        End Using
+
+        attendanceGrid.DataSource = table
     End Sub
 End Class
