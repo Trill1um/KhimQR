@@ -44,6 +44,14 @@ Module ConnModule
                                  "QRCode BLOB" &
                                  ")"
                 cmd.ExecuteNonQuery()
+
+                cmd.CommandText = "CREATE TABLE IF NOT EXISTS Attendance (" &
+                                 "RecNumber INTEGER PRIMARY KEY AUTOINCREMENT, " &
+                                 "StudentID TEXT NOT NULL, " &
+                                 "Date_STAMP TEXT NOT NULL, " &
+                                 "TimeIN TEXT NOT NULL" &
+                                 ")"
+                cmd.ExecuteNonQuery()
             End Using
         Catch
         End Try
