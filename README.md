@@ -1,7 +1,7 @@
-# KhimQR
-Additional Features:
-Professor Interface
-Attendance per Subject
-Timed based attendance(Uniqeu schedule based on program - course - section)
-MasterList per Subject per Proffessor
-Overall StudentList
+# KhimQR<br>
+Additional Features:<br>
+Professor Interface<br>
+Attendance per Subject<br>
+Timed based attendance(Uniqeu schedule based on program - course - section)<br>
+MasterList per Subject per Proffessor<br>
+Overall StudentList<br>
