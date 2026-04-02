@@ -38,15 +38,18 @@ Partial Class Form1
         Button1 = New Button()
         Button2 = New Button()
         Button3 = New Button()
+        Button4 = New Button()
+        TextBox6 = New TextBox()
+        Label7 = New Label()
         CType(PictureBox1, ComponentModel.ISupportInitialize).BeginInit()
         SuspendLayout()
         ' 
         ' TextBox1
         ' 
         TextBox1.Enabled = False
-        TextBox1.Location = New Point(180, 42)
+        TextBox1.Location = New Point(270, 42)
         TextBox1.Name = "TextBox1"
-        TextBox1.Size = New Size(247, 27)
+        TextBox1.Size = New Size(157, 27)
         TextBox1.TabIndex = 0
         ' 
         ' TextBox2
@@ -150,36 +153,61 @@ Partial Class Form1
         ' 
         ' Button1
         ' 
-        Button1.Location = New Point(472, 307)
+        Button1.Location = New Point(643, 9)
         Button1.Name = "Button1"
-        Button1.Size = New Size(363, 29)
+        Button1.Size = New Size(193, 29)
         Button1.TabIndex = 9
         Button1.Text = "Generate QR Code"
         Button1.UseVisualStyleBackColor = True
         ' 
         ' Button2
         ' 
-        Button2.Location = New Point(670, 9)
+        Button2.Location = New Point(794, 305)
         Button2.Name = "Button2"
-        Button2.Size = New Size(165, 29)
+        Button2.Size = New Size(42, 29)
         Button2.TabIndex = 10
-        Button2.Text = "Save to pc"
         Button2.UseVisualStyleBackColor = True
         ' 
         ' Button3
         ' 
-        Button3.Location = New Point(472, 342)
+        Button3.Location = New Point(472, 305)
         Button3.Name = "Button3"
-        Button3.Size = New Size(363, 29)
+        Button3.Size = New Size(316, 29)
         Button3.TabIndex = 10
-        Button3.Text = "SAVE"
+        Button3.Text = "SAVE DATA"
         Button3.UseVisualStyleBackColor = True
+        ' 
+        ' Button4
+        ' 
+        Button4.Location = New Point(472, 9)
+        Button4.Name = "Button4"
+        Button4.Size = New Size(165, 29)
+        Button4.TabIndex = 11
+        Button4.Text = "Admin View"
+        Button4.UseVisualStyleBackColor = True
+        ' 
+        ' TextBox6
+        ' 
+        TextBox6.Location = New Point(180, 42)
+        TextBox6.Name = "TextBox6"
+        TextBox6.Size = New Size(67, 27)
+        TextBox6.TabIndex = 0
+        ' 
+        ' Label7
+        ' 
+        Label7.AutoSize = True
+        Label7.Location = New Point(251, 45)
+        Label7.Name = "Label7"
+        Label7.Size = New Size(15, 20)
+        Label7.TabIndex = 6
+        Label7.Text = "-"
         ' 
         ' Form1
         ' 
         AutoScaleDimensions = New SizeF(8F, 20F)
         AutoScaleMode = AutoScaleMode.Font
-        ClientSize = New Size(897, 396)
+        ClientSize = New Size(897, 354)
+        Controls.Add(Button4)
         Controls.Add(Button3)
         Controls.Add(Button2)
         Controls.Add(Button1)
@@ -189,12 +217,14 @@ Partial Class Form1
         Controls.Add(Label2)
         Controls.Add(Label5)
         Controls.Add(Label3)
+        Controls.Add(Label7)
         Controls.Add(Label1)
         Controls.Add(TextBox5)
         Controls.Add(ComboBox1)
         Controls.Add(TextBox3)
         Controls.Add(TextBox4)
         Controls.Add(TextBox2)
+        Controls.Add(TextBox6)
         Controls.Add(TextBox1)
         Name = "Form1"
         Text = "Form1"
@@ -219,5 +249,8 @@ Partial Class Form1
     Friend WithEvents Button1 As Button
     Friend WithEvents Button2 As Button
     Friend WithEvents Button3 As Button
+    Friend WithEvents Button4 As Button
+    Friend WithEvents TextBox6 As TextBox
+    Friend WithEvents Label7 As Label
 
 End Class
