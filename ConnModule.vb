@@ -34,6 +34,12 @@ Module ConnModule
                                  ")"
                 cmd.ExecuteNonQuery()
 
+                cmd.CommandText = "CREATE TABLE IF NOT EXISTS Course (" &
+                                 "Code TEXT PRIMARY KEY, " &
+                                 "Name TEXT NOT NULL" &
+                                 ")"
+                cmd.ExecuteNonQuery()
+
                 cmd.CommandText = "CREATE TABLE IF NOT EXISTS StudentMasterLists (" &
                                  "StudentID TEXT PRIMARY KEY, " &
                                  "Firstname TEXT, " &

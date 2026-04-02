@@ -8,11 +8,13 @@ Public Class Form2
     Private latestFrame As Mat
     Private ReadOnly qrDetector As New QRCodeDetector()
     Private lastDecodeAttemptUtc As DateTime = DateTime.MinValue
-    Private scanHandled As Boolean
+    Private lastHandledStudentId As String = String.Empty
+    Private lastHandledAtUtc As DateTime = DateTime.MinValue
 
     Private Sub Form2_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         frameTimer = New Timer() With {.Interval = 33}
         AddHandler frameTimer.Tick, AddressOf FrameTimer_Tick
+        startCamera()
     End Sub
 
     Private Sub FrameTimer_Tick(sender As Object, e As EventArgs)
@@ -30,7 +32,7 @@ Public Class Form2
             PictureBox1.Image = bmp
             old?.Dispose()
 
-            If Not scanHandled AndAlso (DateTime.UtcNow - lastDecodeAttemptUtc).TotalMilliseconds >= 200 Then
+            If (DateTime.UtcNow - lastDecodeAttemptUtc).TotalMilliseconds >= 200 Then
                 lastDecodeAttemptUtc = DateTime.UtcNow
                 TryAutoScan(latestFrame)
             End If
@@ -44,37 +46,156 @@ Public Class Form2
             Dim points As Point2f() = Nothing
             Dim decoded = qrDetector.DetectAndDecode(frame, points)
 
-            If Not String.IsNullOrWhiteSpace(decoded) Then
-                scanHandled = True
-                TextBox1.Text = decoded
-                SaveAttendance(decoded)
-                stopCamera()
-                MsgBox(decoded, MsgBoxStyle.Information, "Scanned QR Data")
+            If String.IsNullOrWhiteSpace(decoded) Then
+                Return
             End If
+
+            decoded = decoded.Trim()
+
+            If decoded.Equals(lastHandledStudentId, StringComparison.OrdinalIgnoreCase) AndAlso
+               (DateTime.UtcNow - lastHandledAtUtc).TotalSeconds < 3 Then
+                Return
+            End If
+
+            Dim student = GetStudent(decoded)
+            If student Is Nothing Then
+                Return
+            End If
+
+            Dim timeIn As String
+            Dim existingTimeIn = GetTodayAttendanceTime(decoded)
+            If String.IsNullOrWhiteSpace(existingTimeIn) Then
+                timeIn = SaveAttendance(decoded)
+            Else
+                timeIn = existingTimeIn
+                MsgBox("Already timed in today at " & existingTimeIn, MsgBoxStyle.Information, "Attendance")
+            End If
+
+            TextBox1.Text = student.StudentID
+            TextBox2.Text = BuildDisplayName(student.Firstname, student.Middlename, student.Lastname)
+            TextBox4.Text = ResolveCourseCode(student.Course)
+            TextBox3.Text = student.Section
+            TextBox5.Text = timeIn
+            TextBox6.Text = timeIn
+
+            lastHandledStudentId = decoded
+            lastHandledAtUtc = DateTime.UtcNow
         Catch
         End Try
     End Sub
 
-    Private Sub SaveAttendance(studentId As String)
+    Private Function GetStudent(studentId As String) As StudentScanInfo
         If sqlconn Is Nothing OrElse sqlconn.State <> ConnectionState.Open Then
             connect()
         End If
+
+        Const query As String = "SELECT StudentID, Firstname, Middlename, Lastname, Course, Section FROM StudentMasterLists WHERE StudentID = @StudentID"
+
+        Using cmd As New SqliteCommand(query, sqlconn)
+            cmd.Parameters.AddWithValue("@StudentID", studentId)
+            Using reader = cmd.ExecuteReader()
+                If reader.Read() Then
+                    Return New StudentScanInfo With {
+                        .StudentID = Convert.ToString(reader("StudentID")),
+                        .Firstname = Convert.ToString(reader("Firstname")),
+                        .Middlename = Convert.ToString(reader("Middlename")),
+                        .Lastname = Convert.ToString(reader("Lastname")),
+                        .Course = Convert.ToString(reader("Course")),
+                        .Section = Convert.ToString(reader("Section"))
+                    }
+                End If
+            End Using
+        End Using
+
+        Return Nothing
+    End Function
+
+    Private Function ResolveCourseCode(rawCourse As String) As String
+        Dim courseText = If(rawCourse, String.Empty).Trim()
+        If String.IsNullOrWhiteSpace(courseText) Then
+            Return String.Empty
+        End If
+
+        If courseText.Contains("-") Then
+            Return courseText.Split("-"c)(0).Trim()
+        End If
+
+        If sqlconn Is Nothing OrElse sqlconn.State <> ConnectionState.Open Then
+            connect()
+        End If
+
+        Const query As String = "SELECT Code FROM Course WHERE Code = @value OR Name = @value LIMIT 1"
+        Using cmd As New SqliteCommand(query, sqlconn)
+            cmd.Parameters.AddWithValue("@value", courseText)
+            Dim value = cmd.ExecuteScalar()
+            If value IsNot Nothing AndAlso value IsNot DBNull.Value Then
+                Return Convert.ToString(value)
+            End If
+        End Using
+
+        Return courseText
+    End Function
+
+    Private Function BuildDisplayName(firstname As String, middlename As String, lastname As String) As String
+        Dim first = If(firstname, String.Empty).Trim()
+        Dim middle = If(middlename, String.Empty).Trim()
+        Dim last = If(lastname, String.Empty).Trim()
+
+        Dim middleInitial = String.Empty
+        If middle.Length > 0 Then
+            middleInitial = " " & Char.ToUpperInvariant(middle(0)) & "."
+        End If
+
+        Return (first & middleInitial & " " & last).Trim()
+    End Function
+
+    Private Function SaveAttendance(studentId As String) As String
+        If sqlconn Is Nothing OrElse sqlconn.State <> ConnectionState.Open Then
+            connect()
+        End If
+
+        Dim now = DateTime.Now
+        Dim dateStamp = now.ToString("yyyy-MM-dd")
+        Dim timeIn = now.ToString("HH:mm:ss")
 
         Const insertSql As String = "INSERT INTO Attendance (StudentID, Date_STAMP, TimeIN) VALUES (@StudentID, @Date_STAMP, @TimeIN)"
 
         Using cmd As New SqliteCommand(insertSql, sqlconn)
             cmd.Parameters.AddWithValue("@StudentID", studentId)
-            cmd.Parameters.AddWithValue("@Date_STAMP", DateTime.Now.ToString("yyyy-MM-dd"))
-            cmd.Parameters.AddWithValue("@TimeIN", DateTime.Now.ToString("HH:mm:ss"))
+            cmd.Parameters.AddWithValue("@Date_STAMP", dateStamp)
+            cmd.Parameters.AddWithValue("@TimeIN", timeIn)
             cmd.ExecuteNonQuery()
         End Using
-    End Sub
+
+        Return timeIn
+    End Function
+
+    Private Function GetTodayAttendanceTime(studentId As String) As String
+        If sqlconn Is Nothing OrElse sqlconn.State <> ConnectionState.Open Then
+            connect()
+        End If
+
+        Const query As String = "SELECT TimeIN FROM Attendance WHERE StudentID = @StudentID AND Date_STAMP = @Date_STAMP ORDER BY RecNumber DESC LIMIT 1"
+
+        Using cmd As New SqliteCommand(query, sqlconn)
+            cmd.Parameters.AddWithValue("@StudentID", studentId)
+            cmd.Parameters.AddWithValue("@Date_STAMP", DateTime.Now.ToString("yyyy-MM-dd"))
+            Dim value = cmd.ExecuteScalar()
+
+            If value Is Nothing OrElse value Is DBNull.Value Then
+                Return String.Empty
+            End If
+
+            Return Convert.ToString(value)
+        End Using
+    End Function
 
     Sub startCamera()
         Try
             stopCamera()
-            scanHandled = False
             lastDecodeAttemptUtc = DateTime.MinValue
+            lastHandledStudentId = String.Empty
+            lastHandledAtUtc = DateTime.MinValue
 
             camera = New VideoCapture(0)
             If Not camera.IsOpened() Then
@@ -105,10 +226,6 @@ Public Class Form2
         End Try
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
-        startCamera()
-    End Sub
-
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
         stopCamera()
     End Sub
@@ -119,4 +236,13 @@ Public Class Form2
         latestFrame = Nothing
         qrDetector.Dispose()
     End Sub
+
+    Private Class StudentScanInfo
+        Public Property StudentID As String
+        Public Property Firstname As String
+        Public Property Middlename As String
+        Public Property Lastname As String
+        Public Property Course As String
+        Public Property Section As String
+    End Class
 End Class

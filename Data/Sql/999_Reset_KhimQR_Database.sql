@@ -10,6 +10,12 @@ BEGIN
 END;
 GO
 
+IF OBJECT_ID('dbo.Course', 'U') IS NOT NULL
+BEGIN
+    DROP TABLE dbo.Course;
+END;
+GO
+
 IF OBJECT_ID('dbo.Autonumber', 'U') IS NOT NULL
 BEGIN
     DROP TABLE dbo.Autonumber;
@@ -20,6 +26,13 @@ CREATE TABLE dbo.Autonumber
 (
     pfx NVARCHAR(20) NOT NULL PRIMARY KEY,
     NewNumber NVARCHAR(50) NOT NULL
+);
+GO
+
+CREATE TABLE dbo.Course
+(
+    Code NVARCHAR(20) NOT NULL PRIMARY KEY,
+    Name NVARCHAR(150) NOT NULL
 );
 GO
 

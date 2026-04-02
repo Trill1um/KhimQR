@@ -8,6 +8,16 @@ BEGIN
 END;
 GO
 
+IF OBJECT_ID('dbo.Course', 'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.Course
+    (
+        Code NVARCHAR(20) NOT NULL PRIMARY KEY,
+        Name NVARCHAR(150) NOT NULL
+    );
+END;
+GO
+
 IF OBJECT_ID('dbo.StudentMasterLists', 'U') IS NULL
 BEGIN
     CREATE TABLE dbo.StudentMasterLists
