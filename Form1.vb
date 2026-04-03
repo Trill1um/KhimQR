@@ -1,5 +1,6 @@
 ﻿Imports QRCoder
 Imports System.IO
+Imports Microsoft.Data.Sqlite
 
 Public Class Form1
     Private ReadOnly qrCodeService As New QrCodeService()
@@ -11,17 +12,35 @@ Public Class Form1
     Private Const AutoNumberWidth As Integer = 4
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
-
-        Button2.Image = SystemIcons.GetStockIcon(StockIconId.Folder).ToBitmap()
         connect()
         qrStorageService.EnsureDefaultDirectory()
+        SeedCourses()
+        LoadCourses()
 
         If String.IsNullOrWhiteSpace(TextBox6.Text) Then
             TextBox6.Text = DefaultPrefix
         End If
 
         AutoNumber()
+    End Sub
+
+    Sub SeedCourses() 'called once
+        Dim courses As New List(Of (Code As String, Name As String)) From {
+        ("BSIT", "Bachelor of Science in Information Technology"),
+        ("BSCS", "Bachelor of Science in Computer Science"),
+        ("BSBA", "Bachelor of Science in Business Administration"),
+        ("BSED", "Bachelor of Science in Education"),
+        ("BSME", "Bachelor of Science in Mechanical Engineering")
+    }
+
+        For Each course In courses
+            Using cmd As New SqliteCommand(
+            "INSERT OR IGNORE INTO Course (Code, Name) VALUES (@code, @name)", sqlconn)
+                cmd.Parameters.AddWithValue("@code", course.Code)
+                cmd.Parameters.AddWithValue("@name", course.Name)
+                cmd.ExecuteNonQuery()
+            End Using
+        Next
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
@@ -51,6 +70,17 @@ Public Class Form1
         Dim prefix = GetPrefix()
         Dim nextCode = autoNumberRepository.IncrementAndGet(sqlconn, prefix, AutoNumberWidth)
         TextBox1.Text = GetNumberPart(nextCode, prefix)
+    End Sub
+
+    Sub LoadCourses()
+        ComboBox1.Items.Clear()
+        Using cmd As New SqliteCommand("SELECT Code || ' - ' || Name FROM Course ORDER BY Code", sqlconn)
+            Using reader = cmd.ExecuteReader()
+                While reader.Read()
+                    ComboBox1.Items.Add(reader.GetString(0))
+                End While
+            End Using
+        End Using
     End Sub
 
     Private Function GetPrefix() As String
@@ -111,8 +141,8 @@ Public Class Form1
         Dim student As New StudentRecord With {
             .StudentID = GetFullStudentId(),
             .Firstname = TextBox2.Text,
-            .Middlename = TextBox3.Text,
-            .Lastname = TextBox4.Text,
+            .Middlename = TextBox4.Text,
+            .Lastname = TextBox3.Text,
             .Course = ComboBox1.Text,
             .Section = TextBox5.Text
         }
@@ -155,4 +185,5 @@ Public Class Form1
         ComboBox1.Text = Nothing
         PictureBox1.Image = Nothing
     End Sub
+
 End Class

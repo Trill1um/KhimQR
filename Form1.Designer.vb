@@ -48,43 +48,44 @@ Partial Class Form1
         TextBox1.Enabled = False
         TextBox1.Location = New Point(270, 43)
         TextBox1.Name = "TextBox1"
-        TextBox1.Size = New Size(157, 27)
+        TextBox1.Size = New Size(325, 27)
         TextBox1.TabIndex = 0
         ' 
         ' TextBox2
         ' 
         TextBox2.Location = New Point(180, 86)
         TextBox2.Name = "TextBox2"
-        TextBox2.Size = New Size(247, 27)
+        TextBox2.Size = New Size(415, 27)
         TextBox2.TabIndex = 1
         ' 
         ' TextBox3
         ' 
         TextBox3.Location = New Point(181, 172)
         TextBox3.Name = "TextBox3"
-        TextBox3.Size = New Size(247, 27)
+        TextBox3.Size = New Size(415, 27)
         TextBox3.TabIndex = 3
         ' 
         ' TextBox4
         ' 
         TextBox4.Location = New Point(181, 129)
         TextBox4.Name = "TextBox4"
-        TextBox4.Size = New Size(247, 27)
+        TextBox4.Size = New Size(415, 27)
         TextBox4.TabIndex = 2
         ' 
         ' ComboBox1
         ' 
+        ComboBox1.DropDownStyle = ComboBoxStyle.DropDownList
         ComboBox1.FormattingEnabled = True
         ComboBox1.Location = New Point(180, 215)
         ComboBox1.Name = "ComboBox1"
-        ComboBox1.Size = New Size(247, 28)
+        ComboBox1.Size = New Size(415, 28)
         ComboBox1.TabIndex = 4
         ' 
         ' TextBox5
         ' 
         TextBox5.Location = New Point(180, 259)
         TextBox5.Name = "TextBox5"
-        TextBox5.Size = New Size(247, 27)
+        TextBox5.Size = New Size(415, 27)
         TextBox5.TabIndex = 5
         ' 
         ' Label1
@@ -145,7 +146,7 @@ Partial Class Form1
         ' 
         PictureBox1.BackColor = SystemColors.ButtonShadow
         PictureBox1.BackgroundImageLayout = ImageLayout.Zoom
-        PictureBox1.Location = New Point(472, 45)
+        PictureBox1.Location = New Point(623, 47)
         PictureBox1.Name = "PictureBox1"
         PictureBox1.Size = New Size(257, 257)
         PictureBox1.SizeMode = PictureBoxSizeMode.CenterImage
@@ -154,7 +155,7 @@ Partial Class Form1
         ' 
         ' Button1
         ' 
-        Button1.Location = New Point(472, 11)
+        Button1.Location = New Point(623, 13)
         Button1.Name = "Button1"
         Button1.Size = New Size(257, 29)
         Button1.TabIndex = 9
@@ -163,17 +164,18 @@ Partial Class Form1
         ' 
         ' Button2
         ' 
-        Button2.Location = New Point(687, 316)
+        Button2.Location = New Point(812, 318)
         Button2.Name = "Button2"
-        Button2.Size = New Size(42, 29)
+        Button2.Size = New Size(68, 29)
         Button2.TabIndex = 10
+        Button2.Text = "Export"
         Button2.UseVisualStyleBackColor = True
         ' 
         ' Button3
         ' 
-        Button3.Location = New Point(472, 316)
+        Button3.Location = New Point(623, 318)
         Button3.Name = "Button3"
-        Button3.Size = New Size(209, 29)
+        Button3.Size = New Size(183, 29)
         Button3.TabIndex = 10
         Button3.Text = "SAVE DATA"
         Button3.UseVisualStyleBackColor = True
@@ -199,7 +201,7 @@ Partial Class Form1
         AutoScaleDimensions = New SizeF(8F, 20F)
         AutoScaleMode = AutoScaleMode.Font
         AutoSizeMode = AutoSizeMode.GrowAndShrink
-        ClientSize = New Size(791, 359)
+        ClientSize = New Size(910, 359)
         Controls.Add(Button3)
         Controls.Add(Button2)
         Controls.Add(Button1)

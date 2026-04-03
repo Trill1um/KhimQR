@@ -48,6 +48,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Data\Sql\001_Create_KhimQR_Tables.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Sql\999_Reset_KhimQR_Database.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="My Project\Application.myapp">
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>

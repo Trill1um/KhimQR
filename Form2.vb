@@ -63,35 +63,41 @@ Public Class Form2
             End If
 
             Dim student = GetStudent(decoded)
-            If student Is Nothing Then
-                Return
-            End If
-
             Dim timeIn As String
             Dim dateStamp As String
             Dim msg As String
-            Dim existingAttendance = GetTodayAttendanceTime(decoded)
-            If existingAttendance Is Nothing Then
-                timeIn = SaveAttendance(decoded)
-                dateStamp = DateTime.Now.ToString("yyyy-MM-dd")
-                msg = "Attendance" & Environment.NewLine & "Recorded!"
+
+            If student Is Nothing Then
+                msg = "Student Does Not" & Environment.NewLine & "Exist!"
+                TextBox1.Text = Nothing
+                TextBox2.Text = Nothing
+                TextBox4.Text = Nothing
+                TextBox3.Text = Nothing
+                TextBox6.Text = Nothing
+                TextBox5.Text = Nothing
             Else
-                timeIn = existingAttendance.TimeIn
-                dateStamp = existingAttendance.DateStamp
-                msg = "Already" & Environment.NewLine & "Present!"
-                'ShowAttendanceMessage("Already timed in on " & dateStamp & " at " & timeIn)
+                Dim existingAttendance = GetTodayAttendanceTime(decoded)
+                If existingAttendance Is Nothing Then
+                    timeIn = SaveAttendance(decoded)
+                    dateStamp = DateTime.Now.ToString("yyyy-MM-dd")
+                    msg = "Attendance" & Environment.NewLine & "Recorded!"
+                Else
+                    timeIn = existingAttendance.TimeIn
+                    dateStamp = existingAttendance.DateStamp
+                    msg = "Already" & Environment.NewLine & "Present!"
+                    'ShowAttendanceMessage("Already timed in on " & dateStamp & " at " & timeIn)
+                End If
+
+                TextBox1.Text = student.StudentID
+                TextBox2.Text = BuildDisplayName(student.Firstname, student.Middlename, student.Lastname)
+                TextBox4.Text = ResolveCourseCode(student.Course)
+                TextBox3.Text = student.Section
+                TextBox6.Text = timeIn
+                TextBox5.Text = dateStamp
+                lastHandledStudentId = decoded
+                lastHandledAtUtc = DateTime.UtcNow
             End If
-
-            TextBox1.Text = student.StudentID
-            TextBox2.Text = BuildDisplayName(student.Firstname, student.Middlename, student.Lastname)
-            TextBox4.Text = ResolveCourseCode(student.Course)
-            TextBox3.Text = student.Section
-            TextBox6.Text = timeIn
-            TextBox5.Text = dateStamp
             Label7.Text = msg
-
-            lastHandledStudentId = decoded
-            lastHandledAtUtc = DateTime.UtcNow
         Catch
         End Try
     End Sub

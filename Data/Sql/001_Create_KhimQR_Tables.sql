@@ -1,52 +1,32 @@
-IF OBJECT_ID('dbo.Autonumber', 'U') IS NULL
-BEGIN
-    CREATE TABLE dbo.Autonumber
-    (
-        pfx NVARCHAR(20) NOT NULL PRIMARY KEY,
-        NewNumber NVARCHAR(50) NOT NULL
-    );
-END;
-GO
+CREATE TABLE IF NOT EXISTS Autonumber (
+    pfx TEXT NOT NULL PRIMARY KEY,
+    NewNumber TEXT NOT NULL
+);
 
-IF OBJECT_ID('dbo.Course', 'U') IS NULL
-BEGIN
-    CREATE TABLE dbo.Course
-    (
-        Code NVARCHAR(20) NOT NULL PRIMARY KEY,
-        Name NVARCHAR(150) NOT NULL
-    );
-END;
-GO
+CREATE TABLE IF NOT EXISTS Course (
+    Code TEXT NOT NULL PRIMARY KEY,
+    Name TEXT NOT NULL
+);
 
-IF OBJECT_ID('dbo.StudentMasterLists', 'U') IS NULL
-BEGIN
-    CREATE TABLE dbo.StudentMasterLists
-    (
-        Id INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
-        StudentID NVARCHAR(50) NOT NULL,
-        Firstname NVARCHAR(100) NOT NULL,
-        Middlename NVARCHAR(100) NULL,
-        Lastname NVARCHAR(100) NOT NULL,
-        Course NVARCHAR(100) NOT NULL,
-        Section NVARCHAR(50) NOT NULL,
-        QRCode VARBINARY(MAX) NOT NULL,
-        CreatedAt DATETIME2 NOT NULL CONSTRAINT DF_StudentMasterLists_CreatedAt DEFAULT SYSUTCDATETIME()
-    );
+CREATE TABLE IF NOT EXISTS StudentMasterLists (
+    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+    StudentID TEXT NOT NULL,
+    Firstname TEXT NOT NULL,
+    Middlename TEXT,
+    Lastname TEXT NOT NULL,
+    Course TEXT NOT NULL,
+    Section TEXT NOT NULL,
+    QRCode BLOB NOT NULL,
+    CreatedAt TEXT NOT NULL DEFAULT (datetime('now'))
+);
 
-    CREATE INDEX IX_StudentMasterLists_StudentID ON dbo.StudentMasterLists(StudentID);
-END;
-GO
+CREATE INDEX IF NOT EXISTS IX_StudentMasterLists_StudentID ON StudentMasterLists(StudentID);
 
-IF OBJECT_ID('dbo.Attendance', 'U') IS NULL
-BEGIN
-    CREATE TABLE dbo.Attendance
-    (
-        RecNumber INT IDENTITY(1,1) NOT NULL PRIMARY KEY,
-        StudentID NVARCHAR(50) NOT NULL,
-        Date_STAMP DATE NOT NULL,
-        TimeIN TIME(0) NOT NULL
-    );
+CREATE TABLE IF NOT EXISTS Attendance (
+    RecNumber INTEGER PRIMARY KEY AUTOINCREMENT,
+    StudentID TEXT NOT NULL,
+    Date_STAMP TEXT NOT NULL,
+    TimeIN TEXT NOT NULL
+);
 
-    CREATE INDEX IX_Attendance_StudentID_Date_STAMP ON dbo.Attendance(StudentID, Date_STAMP);
-END;
-GO
+CREATE INDEX IF NOT EXISTS IX_Attendance_StudentID_Date_STAMP ON Attendance(StudentID, Date_STAMP);

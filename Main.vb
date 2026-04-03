@@ -8,6 +8,8 @@
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
-        Form2.ShowDialog()
+        Using f As New Form2()
+            f.ShowDialog(Me)
+        End Using
     End Sub
 End Class

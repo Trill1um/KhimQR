@@ -170,9 +170,9 @@ Partial Class Form2
         ' Label7
         ' 
         Label7.Font = New Font("Segoe UI", 36F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        Label7.Location = New Point(533, 235)
+        Label7.Location = New Point(533, 202)
         Label7.Name = "Label7"
-        Label7.Size = New Size(348, 235)
+        Label7.Size = New Size(348, 345)
         Label7.TabIndex = 5
         Label7.TextAlign = ContentAlignment.MiddleCenter
         Label7.UseMnemonic = False

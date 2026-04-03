@@ -1,3 +1,4 @@
+Imports System.IO
 Imports Microsoft.Data.Sqlite
 
 Public Class AdminForm
@@ -11,6 +12,7 @@ Public Class AdminForm
     Private ReadOnly autonumberGrid As New DataGridView()
     Private ReadOnly attendanceGrid As New DataGridView()
     Private ReadOnly refreshButton As New Button()
+    Private ReadOnly resetButton As New Button()
 
     Public Sub New()
         Text = "Admin - Database Viewer"
@@ -23,6 +25,12 @@ Public Class AdminForm
         refreshButton.Height = 32
         refreshButton.Top = 10
         refreshButton.Left = 10
+
+        resetButton.Text = "Reset DB"
+        resetButton.Width = 120
+        resetButton.Height = 32
+        resetButton.Top = 10
+        resetButton.Left = refreshButton.Right + 10
 
         tabControl.Left = 10
         tabControl.Top = refreshButton.Bottom + 10
@@ -44,7 +52,9 @@ Public Class AdminForm
 
         Controls.Add(refreshButton)
         Controls.Add(tabControl)
+        Controls.Add(resetButton)
 
+        AddHandler resetButton.Click, AddressOf ResetButton_Click
         AddHandler refreshButton.Click, AddressOf RefreshButton_Click
         AddHandler Load, AddressOf AdminForm_Load
     End Sub
@@ -61,6 +71,23 @@ Public Class AdminForm
 
     Private Sub AdminForm_Load(sender As Object, e As EventArgs)
         LoadData()
+    End Sub
+
+    Private Sub ResetButton_Click(sender As Object, e As EventArgs)
+        Dim confirm = MessageBox.Show("This will reset the database. Are you sure?", "Reset DB",
+                                  MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
+        If confirm <> DialogResult.Yes Then Return
+
+        Try
+            Dim sql = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Sql", "999_Reset_KhimQR_Database.sql"))
+            Using cmd As New SqliteCommand(sql, sqlconn)
+                cmd.ExecuteNonQuery()
+            End Using
+            LoadData()
+            MessageBox.Show("Database reset successfully.", "Reset DB", MessageBoxButtons.OK, MessageBoxIcon.Information)
+        Catch ex As Exception
+            MessageBox.Show(ex.Message, "Reset DB", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
+        End Try
     End Sub
 
     Private Sub RefreshButton_Click(sender As Object, e As EventArgs)

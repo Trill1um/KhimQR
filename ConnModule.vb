@@ -25,41 +25,12 @@ Module ConnModule
 
     Private Sub InitializeDatabaseSchema()
         Try
-            Using cmd As New SqliteCommand()
-                cmd.Connection = sqlconn
-
-                cmd.CommandText = "CREATE TABLE IF NOT EXISTS Autonumber (" &
-                                 "pfx TEXT PRIMARY KEY, " &
-                                 "NewNumber TEXT NOT NULL" &
-                                 ")"
-                cmd.ExecuteNonQuery()
-
-                cmd.CommandText = "CREATE TABLE IF NOT EXISTS Course (" &
-                                 "Code TEXT PRIMARY KEY, " &
-                                 "Name TEXT NOT NULL" &
-                                 ")"
-                cmd.ExecuteNonQuery()
-
-                cmd.CommandText = "CREATE TABLE IF NOT EXISTS StudentMasterLists (" &
-                                 "StudentID TEXT PRIMARY KEY, " &
-                                 "Firstname TEXT, " &
-                                 "Middlename TEXT, " &
-                                 "Lastname TEXT, " &
-                                 "Course TEXT, " &
-                                 "Section TEXT, " &
-                                 "QRCode BLOB" &
-                                 ")"
-                cmd.ExecuteNonQuery()
-
-                cmd.CommandText = "CREATE TABLE IF NOT EXISTS Attendance (" &
-                                 "RecNumber INTEGER PRIMARY KEY AUTOINCREMENT, " &
-                                 "StudentID TEXT NOT NULL, " &
-                                 "Date_STAMP TEXT NOT NULL, " &
-                                 "TimeIN TEXT NOT NULL" &
-                                 ")"
+            Dim sql = File.ReadAllText(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Sql", "001_Create_KhimQR_Tables.sql"))
+            Using cmd As New SqliteCommand(sql, sqlconn)
                 cmd.ExecuteNonQuery()
             End Using
-        Catch
+        Catch ex As Exception
+            MessageBox.Show(ex.Message, "Schema Init", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
         End Try
     End Sub
 End Module
