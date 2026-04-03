@@ -28,12 +28,12 @@ Namespace My
             Me.EnableVisualStyles = true
             Me.SaveMySettingsOnExit = true
             Me.ShutDownStyle = Global.Microsoft.VisualBasic.ApplicationServices.ShutdownMode.AfterMainFormCloses
-            Me.HighDpiMode = HighDpiMode.DpiUnaware
+            Me.HighDpiMode = HighDpiMode.PerMonitorV2
         End Sub
         
         <Global.System.Diagnostics.DebuggerStepThroughAttribute()>  _
         Protected Overrides Sub OnCreateMainForm()
-            Me.MainForm = Global.KhimQR.Form2
+            Me.MainForm = Global.KhimQR.Main
         End Sub
         
         <Global.System.Diagnostics.DebuggerStepThroughAttribute()>  _

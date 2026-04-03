@@ -38,7 +38,6 @@ Partial Class Form1
         Button1 = New Button()
         Button2 = New Button()
         Button3 = New Button()
-        Button4 = New Button()
         TextBox6 = New TextBox()
         Label7 = New Label()
         CType(PictureBox1, ComponentModel.ISupportInitialize).BeginInit()
@@ -47,28 +46,28 @@ Partial Class Form1
         ' TextBox1
         ' 
         TextBox1.Enabled = False
-        TextBox1.Location = New Point(270, 42)
+        TextBox1.Location = New Point(270, 43)
         TextBox1.Name = "TextBox1"
         TextBox1.Size = New Size(157, 27)
         TextBox1.TabIndex = 0
         ' 
         ' TextBox2
         ' 
-        TextBox2.Location = New Point(180, 85)
+        TextBox2.Location = New Point(180, 86)
         TextBox2.Name = "TextBox2"
         TextBox2.Size = New Size(247, 27)
         TextBox2.TabIndex = 1
         ' 
         ' TextBox3
         ' 
-        TextBox3.Location = New Point(180, 178)
+        TextBox3.Location = New Point(181, 172)
         TextBox3.Name = "TextBox3"
         TextBox3.Size = New Size(247, 27)
         TextBox3.TabIndex = 3
         ' 
         ' TextBox4
         ' 
-        TextBox4.Location = New Point(180, 135)
+        TextBox4.Location = New Point(181, 129)
         TextBox4.Name = "TextBox4"
         TextBox4.Size = New Size(247, 27)
         TextBox4.TabIndex = 2
@@ -76,14 +75,14 @@ Partial Class Form1
         ' ComboBox1
         ' 
         ComboBox1.FormattingEnabled = True
-        ComboBox1.Location = New Point(180, 223)
+        ComboBox1.Location = New Point(180, 215)
         ComboBox1.Name = "ComboBox1"
         ComboBox1.Size = New Size(247, 28)
         ComboBox1.TabIndex = 4
         ' 
         ' TextBox5
         ' 
-        TextBox5.Location = New Point(180, 272)
+        TextBox5.Location = New Point(180, 259)
         TextBox5.Name = "TextBox5"
         TextBox5.Size = New Size(247, 27)
         TextBox5.TabIndex = 5
@@ -100,7 +99,7 @@ Partial Class Form1
         ' Label2
         ' 
         Label2.AutoSize = True
-        Label2.Location = New Point(25, 85)
+        Label2.Location = New Point(25, 89)
         Label2.Name = "Label2"
         Label2.Size = New Size(76, 20)
         Label2.TabIndex = 7
@@ -109,7 +108,7 @@ Partial Class Form1
         ' Label3
         ' 
         Label3.AutoSize = True
-        Label3.Location = New Point(25, 142)
+        Label3.Location = New Point(25, 132)
         Label3.Name = "Label3"
         Label3.Size = New Size(96, 20)
         Label3.TabIndex = 6
@@ -118,7 +117,7 @@ Partial Class Form1
         ' Label4
         ' 
         Label4.AutoSize = True
-        Label4.Location = New Point(25, 182)
+        Label4.Location = New Point(26, 175)
         Label4.Name = "Label4"
         Label4.Size = New Size(75, 20)
         Label4.TabIndex = 7
@@ -127,7 +126,7 @@ Partial Class Form1
         ' Label5
         ' 
         Label5.AutoSize = True
-        Label5.Location = New Point(25, 231)
+        Label5.Location = New Point(26, 218)
         Label5.Name = "Label5"
         Label5.Size = New Size(54, 20)
         Label5.TabIndex = 6
@@ -136,7 +135,7 @@ Partial Class Form1
         ' Label6
         ' 
         Label6.AutoSize = True
-        Label6.Location = New Point(25, 271)
+        Label6.Location = New Point(25, 262)
         Label6.Name = "Label6"
         Label6.Size = New Size(58, 20)
         Label6.TabIndex = 7
@@ -145,24 +144,26 @@ Partial Class Form1
         ' PictureBox1
         ' 
         PictureBox1.BackColor = SystemColors.ButtonShadow
+        PictureBox1.BackgroundImageLayout = ImageLayout.Zoom
         PictureBox1.Location = New Point(472, 45)
         PictureBox1.Name = "PictureBox1"
-        PictureBox1.Size = New Size(363, 254)
+        PictureBox1.Size = New Size(257, 257)
+        PictureBox1.SizeMode = PictureBoxSizeMode.CenterImage
         PictureBox1.TabIndex = 8
         PictureBox1.TabStop = False
         ' 
         ' Button1
         ' 
-        Button1.Location = New Point(643, 9)
+        Button1.Location = New Point(472, 11)
         Button1.Name = "Button1"
-        Button1.Size = New Size(193, 29)
+        Button1.Size = New Size(257, 29)
         Button1.TabIndex = 9
         Button1.Text = "Generate QR Code"
         Button1.UseVisualStyleBackColor = True
         ' 
         ' Button2
         ' 
-        Button2.Location = New Point(794, 305)
+        Button2.Location = New Point(687, 316)
         Button2.Name = "Button2"
         Button2.Size = New Size(42, 29)
         Button2.TabIndex = 10
@@ -170,25 +171,16 @@ Partial Class Form1
         ' 
         ' Button3
         ' 
-        Button3.Location = New Point(472, 305)
+        Button3.Location = New Point(472, 316)
         Button3.Name = "Button3"
-        Button3.Size = New Size(316, 29)
+        Button3.Size = New Size(209, 29)
         Button3.TabIndex = 10
         Button3.Text = "SAVE DATA"
         Button3.UseVisualStyleBackColor = True
         ' 
-        ' Button4
-        ' 
-        Button4.Location = New Point(472, 9)
-        Button4.Name = "Button4"
-        Button4.Size = New Size(165, 29)
-        Button4.TabIndex = 11
-        Button4.Text = "Admin View"
-        Button4.UseVisualStyleBackColor = True
-        ' 
         ' TextBox6
         ' 
-        TextBox6.Location = New Point(180, 42)
+        TextBox6.Location = New Point(181, 43)
         TextBox6.Name = "TextBox6"
         TextBox6.Size = New Size(67, 27)
         TextBox6.TabIndex = 0
@@ -206,8 +198,8 @@ Partial Class Form1
         ' 
         AutoScaleDimensions = New SizeF(8F, 20F)
         AutoScaleMode = AutoScaleMode.Font
-        ClientSize = New Size(897, 354)
-        Controls.Add(Button4)
+        AutoSizeMode = AutoSizeMode.GrowAndShrink
+        ClientSize = New Size(791, 359)
         Controls.Add(Button3)
         Controls.Add(Button2)
         Controls.Add(Button1)
@@ -227,6 +219,7 @@ Partial Class Form1
         Controls.Add(TextBox6)
         Controls.Add(TextBox1)
         Name = "Form1"
+        StartPosition = FormStartPosition.CenterScreen
         Text = "Form1"
         CType(PictureBox1, ComponentModel.ISupportInitialize).EndInit()
         ResumeLayout(False)
@@ -249,7 +242,6 @@ Partial Class Form1
     Friend WithEvents Button1 As Button
     Friend WithEvents Button2 As Button
     Friend WithEvents Button3 As Button
-    Friend WithEvents Button4 As Button
     Friend WithEvents TextBox6 As TextBox
     Friend WithEvents Label7 As Label
 

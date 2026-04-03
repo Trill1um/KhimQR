@@ -11,6 +11,8 @@ Public Class Form1
     Private Const AutoNumberWidth As Integer = 4
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+
+
         Button2.Image = SystemIcons.GetStockIcon(StockIconId.Folder).ToBitmap()
         connect()
         qrStorageService.EnsureDefaultDirectory()
@@ -24,6 +26,8 @@ Public Class Form1
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
         Try
+            Dim size = Math.Min(PictureBox1.Width, PictureBox1.Height)
+            Dim pixelsPerModule = Math.Max(1, size \ 25)
             Dim input = GetFullStudentId()
 
             If String.IsNullOrWhiteSpace(input) Then
@@ -31,7 +35,7 @@ Public Class Form1
                 Return
             End If
 
-            PictureBox1.Image = qrCodeService.Generate(input, 20)
+            PictureBox1.Image = qrCodeService.Generate(input, pixelsPerModule)
         Catch
             PictureBox1.Image = Nothing
         End Try
@@ -131,8 +135,8 @@ Public Class Form1
         End Try
     End Sub
 
-    Private Sub Button4_Click(sender As Object, e As EventArgs) Handles Button4.Click
-        Using admin As New AdminForm()
+    Private Sub Button4_Click(sender As Object, e As EventArgs)
+        Using admin As New AdminForm
             admin.ShowDialog(Me)
         End Using
     End Sub

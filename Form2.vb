@@ -10,6 +10,7 @@ Public Class Form2
     Private lastDecodeAttemptUtc As DateTime = DateTime.MinValue
     Private lastHandledStudentId As String = String.Empty
     Private lastHandledAtUtc As DateTime = DateTime.MinValue
+    Private isShowingMessage As Boolean
 
     Private Sub Form2_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         frameTimer = New Timer() With {.Interval = 33}
@@ -18,6 +19,10 @@ Public Class Form2
     End Sub
 
     Private Sub FrameTimer_Tick(sender As Object, e As EventArgs)
+        If isShowingMessage Then
+            Return
+        End If
+
         If camera Is Nothing OrElse Not camera.IsOpened() Then
             Return
         End If
@@ -63,20 +68,27 @@ Public Class Form2
             End If
 
             Dim timeIn As String
-            Dim existingTimeIn = GetTodayAttendanceTime(decoded)
-            If String.IsNullOrWhiteSpace(existingTimeIn) Then
+            Dim dateStamp As String
+            Dim msg As String
+            Dim existingAttendance = GetTodayAttendanceTime(decoded)
+            If existingAttendance Is Nothing Then
                 timeIn = SaveAttendance(decoded)
+                dateStamp = DateTime.Now.ToString("yyyy-MM-dd")
+                msg = "Attendance" & Environment.NewLine & "Recorded!"
             Else
-                timeIn = existingTimeIn
-                MsgBox("Already timed in today at " & existingTimeIn, MsgBoxStyle.Information, "Attendance")
+                timeIn = existingAttendance.TimeIn
+                dateStamp = existingAttendance.DateStamp
+                msg = "Already" & Environment.NewLine & "Present!"
+                'ShowAttendanceMessage("Already timed in on " & dateStamp & " at " & timeIn)
             End If
 
             TextBox1.Text = student.StudentID
             TextBox2.Text = BuildDisplayName(student.Firstname, student.Middlename, student.Lastname)
             TextBox4.Text = ResolveCourseCode(student.Course)
             TextBox3.Text = student.Section
-            TextBox5.Text = timeIn
             TextBox6.Text = timeIn
+            TextBox5.Text = dateStamp
+            Label7.Text = msg
 
             lastHandledStudentId = decoded
             lastHandledAtUtc = DateTime.UtcNow
@@ -170,32 +182,49 @@ Public Class Form2
         Return timeIn
     End Function
 
-    Private Function GetTodayAttendanceTime(studentId As String) As String
+    Private Function GetTodayAttendanceTime(studentId As String) As AttendanceScanInfo
         If sqlconn Is Nothing OrElse sqlconn.State <> ConnectionState.Open Then
             connect()
         End If
 
-        Const query As String = "SELECT TimeIN FROM Attendance WHERE StudentID = @StudentID AND Date_STAMP = @Date_STAMP ORDER BY RecNumber DESC LIMIT 1"
+        Const query As String = "SELECT Date_STAMP, TimeIN FROM Attendance WHERE StudentID = @StudentID AND Date_STAMP = @Date_STAMP ORDER BY RecNumber DESC LIMIT 1"
 
         Using cmd As New SqliteCommand(query, sqlconn)
             cmd.Parameters.AddWithValue("@StudentID", studentId)
             cmd.Parameters.AddWithValue("@Date_STAMP", DateTime.Now.ToString("yyyy-MM-dd"))
-            Dim value = cmd.ExecuteScalar()
-
-            If value Is Nothing OrElse value Is DBNull.Value Then
-                Return String.Empty
-            End If
-
-            Return Convert.ToString(value)
+            Using reader = cmd.ExecuteReader()
+                If reader.Read() Then
+                    Return New AttendanceScanInfo With {
+                        .DateStamp = Convert.ToString(reader("Date_STAMP")),
+                        .TimeIn = Convert.ToString(reader("TimeIN"))
+                    }
+                End If
+            End Using
         End Using
+
+        Return Nothing
     End Function
 
-    Sub startCamera()
+    Private Sub ShowAttendanceMessage(message As String)
+        If isShowingMessage Then
+            Return
+        End If
+
+        isShowingMessage = True
+        'stopCamera()
+        MsgBox(message, MsgBoxStyle.Information, "Attendance")
+        'startCamera(False)
+        isShowingMessage = False
+    End Sub
+
+    Sub startCamera(Optional resetState As Boolean = True)
         Try
             stopCamera()
-            lastDecodeAttemptUtc = DateTime.MinValue
-            lastHandledStudentId = String.Empty
-            lastHandledAtUtc = DateTime.MinValue
+            If resetState Then
+                lastDecodeAttemptUtc = DateTime.MinValue
+                lastHandledStudentId = String.Empty
+                lastHandledAtUtc = DateTime.MinValue
+            End If
 
             camera = New VideoCapture(0)
             If Not camera.IsOpened() Then
@@ -236,6 +265,11 @@ Public Class Form2
         latestFrame = Nothing
         qrDetector.Dispose()
     End Sub
+
+    Private Class AttendanceScanInfo
+        Public Property DateStamp As String
+        Public Property TimeIn As String
+    End Class
 
     Private Class StudentScanInfo
         Public Property StudentID As String

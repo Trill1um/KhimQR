@@ -36,15 +36,17 @@ Partial Class Form2
         Label6 = New Label()
         TextBox6 = New TextBox()
         Label4 = New Label()
+        Label7 = New Label()
         CType(PictureBox1, ComponentModel.ISupportInitialize).BeginInit()
         SuspendLayout()
         ' 
         ' PictureBox1
         ' 
-        PictureBox1.BackColor = SystemColors.ControlDark
+        PictureBox1.BackColor = SystemColors.Control
         PictureBox1.Location = New Point(12, 12)
         PictureBox1.Name = "PictureBox1"
         PictureBox1.Size = New Size(500, 500)
+        PictureBox1.SizeMode = PictureBoxSizeMode.CenterImage
         PictureBox1.TabIndex = 0
         PictureBox1.TabStop = False
         ' 
@@ -114,7 +116,7 @@ Partial Class Form2
         ' Label3
         ' 
         Label3.AutoSize = True
-        Label3.Location = New Point(550, 93)
+        Label3.Location = New Point(554, 96)
         Label3.Name = "Label3"
         Label3.Size = New Size(54, 20)
         Label3.TabIndex = 4
@@ -123,7 +125,7 @@ Partial Class Form2
         ' Label5
         ' 
         Label5.AutoSize = True
-        Label5.Location = New Point(546, 135)
+        Label5.Location = New Point(563, 135)
         Label5.Name = "Label5"
         Label5.Size = New Size(41, 20)
         Label5.TabIndex = 4
@@ -141,7 +143,7 @@ Partial Class Form2
         ' Label6
         ' 
         Label6.AutoSize = True
-        Label6.Location = New Point(724, 93)
+        Label6.Location = New Point(724, 96)
         Label6.Name = "Label6"
         Label6.Size = New Size(58, 20)
         Label6.TabIndex = 4
@@ -165,11 +167,22 @@ Partial Class Form2
         Label4.TabIndex = 4
         Label4.Text = "Time In"
         ' 
+        ' Label7
+        ' 
+        Label7.Font = New Font("Segoe UI", 36F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        Label7.Location = New Point(533, 235)
+        Label7.Name = "Label7"
+        Label7.Size = New Size(348, 235)
+        Label7.TabIndex = 5
+        Label7.TextAlign = ContentAlignment.MiddleCenter
+        Label7.UseMnemonic = False
+        ' 
         ' Form2
         ' 
         AutoScaleDimensions = New SizeF(8F, 20F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(913, 558)
+        Controls.Add(Label7)
         Controls.Add(Label4)
         Controls.Add(Label5)
         Controls.Add(Label2)
@@ -185,6 +198,7 @@ Partial Class Form2
         Controls.Add(Button2)
         Controls.Add(PictureBox1)
         Name = "Form2"
+        StartPosition = FormStartPosition.CenterScreen
         Text = "Form2"
         CType(PictureBox1, ComponentModel.ISupportInitialize).EndInit()
         ResumeLayout(False)
@@ -205,4 +219,5 @@ Partial Class Form2
     Friend WithEvents Label6 As Label
     Friend WithEvents TextBox6 As TextBox
     Friend WithEvents Label4 As Label
+    Friend WithEvents Label7 As Label
 End Class

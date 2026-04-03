@@ -107,6 +107,18 @@ Public Class AdminForm
         autonumberGrid.DataSource = table
     End Sub
 
+    Private Sub InitializeComponent()
+        SuspendLayout()
+        ' 
+        ' AdminForm
+        ' 
+        ClientSize = New Size(282, 253)
+        Name = "AdminForm"
+        StartPosition = FormStartPosition.CenterParent
+        ResumeLayout(False)
+
+    End Sub
+
     Private Sub LoadAttendance()
         Dim table As New DataTable()
         Const sql As String = "SELECT RecNumber, StudentID, Date_STAMP, TimeIN FROM Attendance ORDER BY RecNumber DESC"
