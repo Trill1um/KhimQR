@@ -8,8 +8,13 @@
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
-        Using f As New Form2()
-            f.ShowDialog(Me)
+        Using loginForm As New ProfessorLoginForm()
+            If loginForm.ShowDialog(Me) = DialogResult.OK Then
+                Using f As New Form2()
+                    f.CurrentProfessorId = loginForm.SelectedProfessorId
+                    f.ShowDialog(Me)
+                End Using
+            End If
         End Using
     End Sub
 End Class

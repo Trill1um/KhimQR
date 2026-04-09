@@ -3,6 +3,8 @@ Imports OpenCvSharp
 Imports OpenCvSharp.Extensions
 
 Public Class Form2
+    <System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)>
+    Public Property CurrentProfessorId As Integer
     Private camera As VideoCapture
     Private frameTimer As Timer
     Private latestFrame As Mat
@@ -13,8 +15,35 @@ Public Class Form2
     Private isShowingMessage As Boolean
 
     Private Sub Form2_Load(sender As Object, e As EventArgs) Handles MyBase.Load
+#If DEBUG Then
+        Dim panelTest As New Panel() With {.Dock = DockStyle.Top, .Height = 40, .BackColor = Color.LightYellow}
+        Dim chkOverride As New CheckBox() With {.Text = "Override Time:", .Location = New System.Drawing.Point(10, 10), .AutoSize = True}
+        Dim dtpTime As New DateTimePicker() With {.Format = DateTimePickerFormat.Custom, .CustomFormat = "yyyy-MM-dd HH:mm:ss", .Location = New System.Drawing.Point(120, 8), .Width = 200, .Enabled = False, .Value = DateTime.Now}
+
+        AddHandler chkOverride.CheckedChanged, Sub() 
+                                                   dtpTime.Enabled = chkOverride.Checked
+                                                   SystemClock.SimulatedTime = If(chkOverride.Checked, dtpTime.Value, Nothing)
+                                               End Sub
+        AddHandler dtpTime.ValueChanged, Sub() 
+                                             If chkOverride.Checked Then SystemClock.SimulatedTime = dtpTime.Value
+                                         End Sub
+
+        panelTest.Controls.Add(chkOverride)
+        panelTest.Controls.Add(dtpTime)
+        Me.Controls.Add(panelTest)
+#End If
+
         frameTimer = New Timer() With {.Interval = 33}
         AddHandler frameTimer.Tick, AddressOf FrameTimer_Tick
+
+        If CurrentProfessorId > 0 Then
+            Using cmd As New SqliteCommand("SELECT FirstName || ' ' || LastName FROM Professor WHERE Professor_ID = @id", sqlconn)
+                cmd.Parameters.AddWithValue("@id", CurrentProfessorId)
+                Dim profName = Convert.ToString(cmd.ExecuteScalar())
+                Me.Text = "Scanner - Logged in as: Prof. " & profName
+            End Using
+        End If
+
         startCamera()
     End Sub
 
@@ -77,9 +106,8 @@ Public Class Form2
                 Return
             End If
 
-            ' 2. Find currently Active ClassSession based on DateTime.Now (or prompt professor)
-            ' For this generalized refactor, we find ANY Active ClassSession right now
-            Dim now As DateTime = DateTime.Now
+            ' 2. Find currently Active ClassSessions based on SystemClock AND current Professor
+            Dim now As DateTime = SystemClock.Now
             Dim currentDayOfWeek As Integer = CInt(now.DayOfWeek)
             Dim currentTime As String = now.ToString("HH:mm")
 
@@ -87,33 +115,45 @@ Public Class Form2
             Dim activeSectionId As Integer = 0
             Dim gracePeriod As Integer = 0
             Dim startTime As DateTime
-            Dim endTime As DateTime
             Dim courseName As String = ""
             Dim sectionName As String = ""
+            Dim enrollmentId As Integer = 0
 
-            Dim sql As String = "SELECT cs.ClassSession_ID, c.ClassSection_ID, c.GracePeriodMinutes, cs.StartTime, cs.EndTime, cr.Name, c.SectionName " &
+            Dim isProfessorTeachingRightNow As Boolean = False
+
+            ' We look for ANY active session the professor is teaching right now, 
+            ' but we specifically prioritize the one where THIS student is enrolled.
+            Dim sql As String = "SELECT cs.ClassSession_ID, c.ClassSection_ID, c.GracePeriodMinutes, cs.StartTime, cr.Name, c.SectionName, e.Enrollment_ID " &
                                 "FROM ClassSession cs " &
                                 "JOIN ClassSection c ON cs.ClassSection_ID = c.ClassSection_ID " &
                                 "JOIN Course cr ON c.Course_ID = cr.Course_ID " &
-                                "WHERE cs.DayOfWeek = @dow AND cs.StartTime <= @time AND cs.EndTime >= @time LIMIT 1"
+                                "LEFT JOIN Enrollment e ON c.ClassSection_ID = e.ClassSection_ID AND e.Student_ID = @studentId " &
+                                "WHERE cs.DayOfWeek = @dow AND cs.StartTime <= @time AND cs.EndTime >= @time AND c.Professor_ID = @profId " &
+                                "ORDER BY e.Enrollment_ID DESC" ' Push the actual enrollment to the top of the results if it exists
 
             Using cmd As New SqliteCommand(sql, sqlconn)
                 cmd.Parameters.AddWithValue("@dow", currentDayOfWeek)
                 cmd.Parameters.AddWithValue("@time", currentTime)
+                cmd.Parameters.AddWithValue("@profId", CurrentProfessorId)
+                cmd.Parameters.AddWithValue("@studentId", student.ID)
                 Using reader = cmd.ExecuteReader()
                     If reader.Read() Then
+                        isProfessorTeachingRightNow = True
                         activeSessionId = Convert.ToInt32(reader("ClassSession_ID"))
                         activeSectionId = Convert.ToInt32(reader("ClassSection_ID"))
                         gracePeriod = Convert.ToInt32(reader("GracePeriodMinutes"))
                         startTime = DateTime.Parse(reader("StartTime").ToString())
-                        endTime = DateTime.Parse(reader("EndTime").ToString())
                         courseName = reader("Name").ToString()
                         sectionName = reader("SectionName").ToString()
+
+                        If Not IsDBNull(reader("Enrollment_ID")) Then
+                            enrollmentId = Convert.ToInt32(reader("Enrollment_ID"))
+                        End If
                     End If
                 End Using
             End Using
 
-            If activeSessionId = 0 Then
+            If Not isProfessorTeachingRightNow Then
                 Label7.Text = "Class Not In Session"
                 TextBox1.Text = student.Student_Code
                 TextBox2.Text = BuildDisplayName(student.FirstName, student.MiddleName, student.LastName)
@@ -122,12 +162,7 @@ Public Class Form2
                 Return
             End If
 
-            ' 3. Query Enrollment table using Student_ID and activeSectionId
-            Dim enrollmentRepo As New EnrollmentRepository()
-            Dim enrollment = enrollmentRepo.GetEnrollment(sqlconn, student.ID, activeSectionId)
-
-            If enrollment Is Nothing Then
-                MsgBox("Student Not Enrolled in Current Class Session", MsgBoxStyle.Exclamation, "System Message")
+            If enrollmentId = 0 Then
                 Label7.Text = "Not Enrolled"
                 lastHandledStudentId = decoded
                 lastHandledAtUtc = DateTime.UtcNow
@@ -138,7 +173,7 @@ Public Class Form2
             Dim attendanceRepo As New AttendanceRepository()
             Dim dateStamp As String = now.ToString("yyyy-MM-dd")
 
-            If attendanceRepo.HasRecord(sqlconn, enrollment.Enrollment_ID, activeSessionId, dateStamp) Then
+            If attendanceRepo.HasRecord(sqlconn, enrollmentId, activeSessionId, dateStamp) Then
                 Label7.Text = "Student Already" & Environment.NewLine & "Recorded"
                 lastHandledStudentId = decoded
                 lastHandledAtUtc = DateTime.UtcNow
@@ -158,7 +193,7 @@ Public Class Form2
             Dim timeInAsStr As String = now.ToString("HH:mm:ss")
             Dim att As New Attendance With {
                 .ClassSession_ID = activeSessionId,
-                .Enrollment_ID = enrollment.Enrollment_ID,
+                .Enrollment_ID = enrollmentId,
                 .Date_Stamp = dateStamp,
                 .TimeIn = timeInAsStr,
                 .Status = status
@@ -180,61 +215,9 @@ Public Class Form2
             lastHandledAtUtc = DateTime.UtcNow
 
         Catch ex As Exception
-           ' Error handling
+            ' Error handling
         End Try
     End Sub
-
-    Private Function GetStudent(studentId As String) As StudentScanInfo
-        If sqlconn Is Nothing OrElse sqlconn.State <> ConnectionState.Open Then
-            connect()
-        End If
-
-        Const query As String = "SELECT StudentID, Firstname, Middlename, Lastname, Course, Section FROM StudentMasterLists WHERE StudentID = @StudentID"
-
-        Using cmd As New SqliteCommand(query, sqlconn)
-            cmd.Parameters.AddWithValue("@StudentID", studentId)
-            Using reader = cmd.ExecuteReader()
-                If reader.Read() Then
-                    Return New StudentScanInfo With {
-                        .StudentID = Convert.ToString(reader("StudentID")),
-                        .Firstname = Convert.ToString(reader("Firstname")),
-                        .Middlename = Convert.ToString(reader("Middlename")),
-                        .Lastname = Convert.ToString(reader("Lastname")),
-                        .Course = Convert.ToString(reader("Course")),
-                        .Section = Convert.ToString(reader("Section"))
-                    }
-                End If
-            End Using
-        End Using
-
-        Return Nothing
-    End Function
-
-    Private Function ResolveCourseCode(rawCourse As String) As String
-        Dim courseText = If(rawCourse, String.Empty).Trim()
-        If String.IsNullOrWhiteSpace(courseText) Then
-            Return String.Empty
-        End If
-
-        If courseText.Contains("-") Then
-            Return courseText.Split("-"c)(0).Trim()
-        End If
-
-        If sqlconn Is Nothing OrElse sqlconn.State <> ConnectionState.Open Then
-            connect()
-        End If
-
-        Const query As String = "SELECT Code FROM Course WHERE Code = @value OR Name = @value LIMIT 1"
-        Using cmd As New SqliteCommand(query, sqlconn)
-            cmd.Parameters.AddWithValue("@value", courseText)
-            Dim value = cmd.ExecuteScalar()
-            If value IsNot Nothing AndAlso value IsNot DBNull.Value Then
-                Return Convert.ToString(value)
-            End If
-        End Using
-
-        Return courseText
-    End Function
 
     Private Function BuildDisplayName(firstname As String, middlename As String, lastname As String) As String
         Dim first = If(firstname, String.Empty).Trim()
@@ -254,7 +237,7 @@ Public Class Form2
             connect()
         End If
 
-        Dim now = DateTime.Now
+        Dim now = SystemClock.Now
         Dim dateStamp = now.ToString("yyyy-MM-dd")
         Dim timeIn = now.ToString("HH:mm:ss")
 
@@ -279,7 +262,7 @@ Public Class Form2
 
         Using cmd As New SqliteCommand(query, sqlconn)
             cmd.Parameters.AddWithValue("@StudentID", studentId)
-            cmd.Parameters.AddWithValue("@Date_STAMP", DateTime.Now.ToString("yyyy-MM-dd"))
+            cmd.Parameters.AddWithValue("@Date_STAMP", SystemClock.Now.ToString("yyyy-MM-dd"))
             Using reader = cmd.ExecuteReader()
                 If reader.Read() Then
                     Return New AttendanceScanInfo With {

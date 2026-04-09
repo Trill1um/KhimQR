@@ -5,42 +5,12 @@ Imports Microsoft.Data.Sqlite
 Public Class Form1
     Private ReadOnly qrCodeService As New QrCodeService()
     Private ReadOnly qrStorageService As New QrStorageService()
-    Private ReadOnly autoNumberRepository As New AutoNumberRepository()
     Private ReadOnly studentRepository As New StudentRepository()
-
-    Private Const DefaultPrefix As String = "MAR"
-    Private Const AutoNumberWidth As Integer = 4
 
     Private Sub Form1_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         connect()
         qrStorageService.EnsureDefaultDirectory()
-        SeedCourses()
         LoadCourses()
-
-        If String.IsNullOrWhiteSpace(TextBox6.Text) Then
-            TextBox6.Text = DefaultPrefix
-        End If
-
-        AutoNumber()
-    End Sub
-
-    Sub SeedCourses() 'called once
-        Dim courses As New List(Of (Code As String, Name As String)) From {
-        ("BSIT", "Bachelor of Science in Information Technology"),
-        ("BSCS", "Bachelor of Science in Computer Science"),
-        ("BSBA", "Bachelor of Science in Business Administration"),
-        ("BSED", "Bachelor of Science in Education"),
-        ("BSME", "Bachelor of Science in Mechanical Engineering")
-    }
-
-        For Each course In courses
-            Using cmd As New SqliteCommand(
-            "INSERT OR IGNORE INTO Course (Code, Name) VALUES (@code, @name)", sqlconn)
-                cmd.Parameters.AddWithValue("@code", course.Code)
-                cmd.Parameters.AddWithValue("@name", course.Name)
-                cmd.ExecuteNonQuery()
-            End Using
-        Next
     End Sub
 
     Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
@@ -60,18 +30,6 @@ Public Class Form1
         End Try
     End Sub
 
-    Sub AutoNumber()
-        Dim prefix = GetPrefix()
-        Dim code = autoNumberRepository.GetCurrentOrDefault(sqlconn, prefix, AutoNumberWidth)
-        TextBox1.Text = GetNumberPart(code, prefix)
-    End Sub
-
-    Sub CreateNewAutoNumber()
-        Dim prefix = GetPrefix()
-        Dim nextCode = autoNumberRepository.IncrementAndGet(sqlconn, prefix, AutoNumberWidth)
-        TextBox1.Text = GetNumberPart(nextCode, prefix)
-    End Sub
-
     Sub LoadCourses()
         ComboBox1.Items.Clear()
         Using cmd As New SqliteCommand("SELECT Code || ' - ' || Name FROM Course ORDER BY Code", sqlconn)
@@ -83,45 +41,8 @@ Public Class Form1
         End Using
     End Sub
 
-    Private Function GetPrefix() As String
-        Dim source = TextBox6.Text.Trim()
-        If String.IsNullOrWhiteSpace(source) Then
-            Return DefaultPrefix
-        End If
-
-        Dim chars As New List(Of Char)()
-        For Each c In source
-            If Char.IsLetterOrDigit(c) Then
-                chars.Add(Char.ToUpperInvariant(c))
-            End If
-
-            If chars.Count = 6 Then
-                Exit For
-            End If
-        Next
-
-        Dim prefix = New String(chars.ToArray())
-        Return If(String.IsNullOrWhiteSpace(prefix), DefaultPrefix, prefix)
-    End Function
-
-    Private Function GetNumberPart(code As String, prefix As String) As String
-        Dim numberPart = code
-        If numberPart.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) Then
-            numberPart = numberPart.Substring(prefix.Length)
-        End If
-
-        Return numberPart.TrimStart("-"c)
-    End Function
-
     Private Function GetFullStudentId() As String
-        Dim prefix = GetPrefix()
-        Dim numberPart = TextBox1.Text.Trim()
-
-        If String.IsNullOrWhiteSpace(numberPart) Then
-            Return String.Empty
-        End If
-
-        Return prefix & numberPart
+        Return TextBox1.Text.Trim()
     End Function
 
     Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
@@ -147,13 +68,76 @@ Public Class Form1
 
         studentRepository.Save(sqlconn, student)
 
+        ' Reload student to get ID
+        student = studentRepository.GetByStudentCode(sqlconn, student.Student_Code)
+
+        ' Try Enrolling
+        If ComboBox1.SelectedItem IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(TextBox5.Text) Then
+            Dim selectedCourse As String = ComboBox1.SelectedItem.ToString()
+            Dim courseCode As String = selectedCourse.Split("-"c)(0).Trim()
+            Dim sectionName As String = TextBox5.Text.Trim()
+
+            Dim courseId As Integer = 0
+            Using cmd As New SqliteCommand("SELECT Course_ID FROM Course WHERE Code = @c", sqlconn)
+                cmd.Parameters.AddWithValue("@c", courseCode)
+                Dim res = cmd.ExecuteScalar()
+                If res IsNot Nothing AndAlso Not DBNull.Value.Equals(res) Then
+                    courseId = Convert.ToInt32(res)
+                End If
+            End Using
+
+            If courseId > 0 Then
+                Dim classSectionId As Integer = 0
+                Using cmd As New SqliteCommand("SELECT ClassSection_ID FROM ClassSection WHERE Course_ID = @c AND SectionName = @s", sqlconn)
+                    cmd.Parameters.AddWithValue("@c", courseId)
+                    cmd.Parameters.AddWithValue("@s", sectionName)
+                    Dim res = cmd.ExecuteScalar()
+                    If res IsNot Nothing AndAlso Not DBNull.Value.Equals(res) Then
+                        classSectionId = Convert.ToInt32(res)
+                    End If
+                End Using
+
+                If classSectionId = 0 Then
+                    Dim profId As Integer = 1
+                    Using cmd As New SqliteCommand("SELECT Professor_ID FROM Professor LIMIT 1", sqlconn)
+                        Dim res = cmd.ExecuteScalar()
+                        If res IsNot Nothing Then profId = Convert.ToInt32(res)
+                    End Using
+
+                    Dim repo As New ClassSectionRepository()
+                    classSectionId = repo.Save(sqlconn, New ClassSection With {
+                        .Course_ID = courseId,
+                        .Professor_ID = profId,
+                        .SectionName = sectionName,
+                        .GracePeriodMinutes = 15
+                    })
+
+                    ' Add default all-day session for testing
+                    Dim sessionRepo As New ClassSessionRepository()
+                    For i As Integer = 0 To 6
+                        sessionRepo.Save(sqlconn, New ClassSession With {
+                            .ClassSection_ID = classSectionId,
+                            .DayOfWeek = i,
+                            .StartTime = "00:00",
+                            .EndTime = "23:59"
+                        })
+                    Next
+                End If
+
+                Dim enrolRepo As New EnrollmentRepository()
+                enrolRepo.Save(sqlconn, New Enrollment With {
+                    .Student_ID = student.ID,
+                    .ClassSection_ID = classSectionId
+                })
+            End If
+        End If
+
         qrStorageService.SaveToDefaultDirectory(PictureBox1.Image, GetFullStudentId())
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
         Try
             savestudentdata()
-            CreateNewAutoNumber()
             clear()
         Catch ex As Exception
             MsgBox(ex.Message, MsgBoxStyle.Exclamation, "System Message:")
@@ -166,18 +150,12 @@ Public Class Form1
         End Using
     End Sub
 
-    Private Sub TextBox6_TextChanged(sender As Object, e As EventArgs) Handles TextBox6.TextChanged
-        If sqlconn IsNot Nothing AndAlso sqlconn.State = ConnectionState.Open Then
-            AutoNumber()
-        End If
-    End Sub
-
     Sub clear()
         TextBox2.Clear()
         TextBox3.Clear()
         TextBox4.Clear()
         TextBox5.Clear()
-        ComboBox1.Text = Nothing
+        TextBox1.Clear()
         PictureBox1.Image = Nothing
     End Sub
 

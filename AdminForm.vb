@@ -5,11 +5,20 @@ Public Class AdminForm
     Inherits Form
 
     Private ReadOnly tabControl As New TabControl()
-    Private ReadOnly studentsPage As New TabPage("Students")
-    Private ReadOnly autonumberPage As New TabPage("Autonumber")
+    Private ReadOnly profPage As New TabPage("Professor")
+    Private ReadOnly coursePage As New TabPage("Course")
+    Private ReadOnly studentPage As New TabPage("Student")
+    Private ReadOnly classSectionPage As New TabPage("ClassSection")
+    Private ReadOnly classSessionPage As New TabPage("ClassSession")
+    Private ReadOnly enrollmentPage As New TabPage("Enrollment")
     Private ReadOnly attendancePage As New TabPage("Attendance")
-    Private ReadOnly studentsGrid As New DataGridView()
-    Private ReadOnly autonumberGrid As New DataGridView()
+
+    Private ReadOnly profGrid As New DataGridView()
+    Private ReadOnly courseGrid As New DataGridView()
+    Private ReadOnly studentGrid As New DataGridView()
+    Private ReadOnly classSectionGrid As New DataGridView()
+    Private ReadOnly classSessionGrid As New DataGridView()
+    Private ReadOnly enrollmentGrid As New DataGridView()
     Private ReadOnly attendanceGrid As New DataGridView()
     Private ReadOnly refreshButton As New Button()
     Private ReadOnly resetButton As New Button()
@@ -38,16 +47,28 @@ Public Class AdminForm
         tabControl.Height = ClientSize.Height - tabControl.Top - 10
         tabControl.Anchor = AnchorStyles.Top Or AnchorStyles.Bottom Or AnchorStyles.Left Or AnchorStyles.Right
 
-        ConfigureGrid(studentsGrid)
-        ConfigureGrid(autonumberGrid)
+        ConfigureGrid(profGrid)
+        ConfigureGrid(courseGrid)
+        ConfigureGrid(studentGrid)
+        ConfigureGrid(classSectionGrid)
+        ConfigureGrid(classSessionGrid)
+        ConfigureGrid(enrollmentGrid)
         ConfigureGrid(attendanceGrid)
 
-        studentsPage.Controls.Add(studentsGrid)
-        autonumberPage.Controls.Add(autonumberGrid)
+        profPage.Controls.Add(profGrid)
+        coursePage.Controls.Add(courseGrid)
+        studentPage.Controls.Add(studentGrid)
+        classSectionPage.Controls.Add(classSectionGrid)
+        classSessionPage.Controls.Add(classSessionGrid)
+        enrollmentPage.Controls.Add(enrollmentGrid)
         attendancePage.Controls.Add(attendanceGrid)
 
-        tabControl.TabPages.Add(studentsPage)
-        tabControl.TabPages.Add(autonumberPage)
+        tabControl.TabPages.Add(profPage)
+        tabControl.TabPages.Add(coursePage)
+        tabControl.TabPages.Add(studentPage)
+        tabControl.TabPages.Add(classSectionPage)
+        tabControl.TabPages.Add(classSessionPage)
+        tabControl.TabPages.Add(enrollmentPage)
         tabControl.TabPages.Add(attendancePage)
 
         Controls.Add(refreshButton)
@@ -74,7 +95,7 @@ Public Class AdminForm
     End Sub
 
     Private Sub ResetButton_Click(sender As Object, e As EventArgs)
-        Dim confirm = MessageBox.Show("This will reset the database. Are you sure?", "Reset DB",
+        Dim confirm = MessageBox.Show("This will reset the database and delete all generated QR code images. Are you sure?", "Reset DB",
                                   MessageBoxButtons.YesNo, MessageBoxIcon.Warning)
         If confirm <> DialogResult.Yes Then Return
 
@@ -83,8 +104,20 @@ Public Class AdminForm
             Using cmd As New SqliteCommand(sql, sqlconn)
                 cmd.ExecuteNonQuery()
             End Using
+
+            ' Delete all exported QR code images
+            Dim qrStorageDir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Storage", "QrCodes")
+            If Directory.Exists(qrStorageDir) Then
+                For Each file In Directory.GetFiles(qrStorageDir, "*.png")
+                    Try
+                        IO.File.Delete(file)
+                    Catch ignore As Exception
+                    End Try
+                Next
+            End If
+
             LoadData()
-            MessageBox.Show("Database reset successfully.", "Reset DB", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            MessageBox.Show("Database and images reset successfully.", "Reset DB", MessageBoxButtons.OK, MessageBoxIcon.Information)
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Reset DB", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
         End Try
@@ -100,40 +133,94 @@ Public Class AdminForm
                 connect()
             End If
 
-            LoadStudents()
-            LoadAutonumber()
+            LoadProf()
+            LoadCourse()
+            LoadStudent()
+            LoadClassSection()
+            LoadClassSession()
+            LoadEnrollment()
             LoadAttendance()
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Admin", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
         End Try
     End Sub
 
-    Private Sub LoadStudents()
+    Private Sub LoadProf()
         Dim table As New DataTable()
-        Const sql As String = "SELECT StudentID, Firstname, Middlename, Lastname, Course, Section, length(QRCode) AS QRBytes FROM StudentMasterLists ORDER BY StudentID"
-
+        Const sql As String = "SELECT * FROM Professor"
         Using cmd As New SqliteCommand(sql, sqlconn)
             Using reader = cmd.ExecuteReader()
                 table.Load(reader)
             End Using
         End Using
-
-        studentsGrid.DataSource = table
+        profGrid.DataSource = table
     End Sub
 
-    Private Sub LoadAutonumber()
+    Private Sub LoadCourse()
         Dim table As New DataTable()
-        Const sql As String = "SELECT pfx, NewNumber FROM Autonumber ORDER BY pfx"
-
+        Const sql As String = "SELECT * FROM Course"
         Using cmd As New SqliteCommand(sql, sqlconn)
             Using reader = cmd.ExecuteReader()
                 table.Load(reader)
             End Using
         End Using
-
-        autonumberGrid.DataSource = table
+        courseGrid.DataSource = table
     End Sub
 
+    Private Sub LoadStudent()
+        Dim table As New DataTable()
+        Const sql As String = "SELECT * FROM Student"
+        Using cmd As New SqliteCommand(sql, sqlconn)
+            Using reader = cmd.ExecuteReader()
+                table.Load(reader)
+            End Using
+        End Using
+        studentGrid.DataSource = table
+    End Sub
+
+    Private Sub LoadClassSection()
+        Dim table As New DataTable()
+        Const sql As String = "SELECT * FROM ClassSection"
+        Using cmd As New SqliteCommand(sql, sqlconn)
+            Using reader = cmd.ExecuteReader()
+                table.Load(reader)
+            End Using
+        End Using
+        classSectionGrid.DataSource = table
+    End Sub
+
+    Private Sub LoadClassSession()
+        Dim table As New DataTable()
+        Const sql As String = "SELECT * FROM ClassSession"
+        Using cmd As New SqliteCommand(sql, sqlconn)
+            Using reader = cmd.ExecuteReader()
+                table.Load(reader)
+            End Using
+        End Using
+        classSessionGrid.DataSource = table
+    End Sub
+
+    Private Sub LoadEnrollment()
+        Dim table As New DataTable()
+        Const sql As String = "SELECT * FROM Enrollment"
+        Using cmd As New SqliteCommand(sql, sqlconn)
+            Using reader = cmd.ExecuteReader()
+                table.Load(reader)
+            End Using
+        End Using
+        enrollmentGrid.DataSource = table
+    End Sub
+
+    Private Sub LoadAttendance()
+        Dim table As New DataTable()
+        Const sql As String = "SELECT * FROM Attendance"
+        Using cmd As New SqliteCommand(sql, sqlconn)
+            Using reader = cmd.ExecuteReader()
+                table.Load(reader)
+            End Using
+        End Using
+        attendanceGrid.DataSource = table
+    End Sub
     Private Sub InitializeComponent()
         SuspendLayout()
         ' 
@@ -146,16 +233,4 @@ Public Class AdminForm
 
     End Sub
 
-    Private Sub LoadAttendance()
-        Dim table As New DataTable()
-        Const sql As String = "SELECT RecNumber, StudentID, Date_STAMP, TimeIN FROM Attendance ORDER BY RecNumber DESC"
-
-        Using cmd As New SqliteCommand(sql, sqlconn)
-            Using reader = cmd.ExecuteReader()
-                table.Load(reader)
-            End Using
-        End Using
-
-        attendanceGrid.DataSource = table
-    End Sub
 End Class

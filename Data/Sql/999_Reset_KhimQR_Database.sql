@@ -5,12 +5,6 @@ DROP TABLE IF EXISTS ClassSection;
 DROP TABLE IF EXISTS Student;
 DROP TABLE IF EXISTS Course;
 DROP TABLE IF EXISTS Professor;
-DROP TABLE IF EXISTS Autonumber;
-
-CREATE TABLE Autonumber (
-    pfx TEXT NOT NULL PRIMARY KEY,
-    NewNumber TEXT NOT NULL
-);
 
 CREATE TABLE Professor (
     Professor_ID INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -74,18 +68,24 @@ CREATE TABLE Attendance (
 );
 
 INSERT INTO Professor (FirstName, MiddleName, LastName) VALUES ('John', 'D.', 'Smith');
+INSERT INTO Professor (FirstName, MiddleName, LastName) VALUES ('Jane', 'A.', 'Doe');
+INSERT INTO Professor (FirstName, MiddleName, LastName) VALUES ('Robert', '', 'Johnson');
+
 INSERT INTO Course (Code, Name) VALUES ('CS101', 'Intro to Programming');
-INSERT INTO Course (Code, Name) VALUES ('MATH101', 'Calculus I');
+INSERT INTO Course (Code, Name) VALUES ('CS222', 'Advanced Computer Programming');
+INSERT INTO Course (Code, Name) VALUES ('MTH101', 'Calculus I');
+INSERT INTO Course (Code, Name) VALUES ('MTH202', 'Linear Algebra');
+INSERT INTO Course (Code, Name) VALUES ('ENG101', 'English Composition');
 
--- Sample Class Section
-INSERT INTO ClassSection (Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (1, 1, 'Section A', 15);
-INSERT INTO ClassSection (Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (2, 1, 'Section B', 15);
+-- Sample Class Sections
+INSERT INTO ClassSection (Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (1, 1, 'IT-1A', 15);
+INSERT INTO ClassSection (Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (2, 2, 'CS-2B', 15);
 
--- Make sessions all day to test easily, spanning all days
-INSERT INTO ClassSession (ClassSection_ID, DayOfWeek, StartTime, EndTime) VALUES (1, 0, '00:00', '23:59');
-INSERT INTO ClassSession (ClassSection_ID, DayOfWeek, StartTime, EndTime) VALUES (1, 1, '00:00', '23:59');
-INSERT INTO ClassSession (ClassSection_ID, DayOfWeek, StartTime, EndTime) VALUES (1, 2, '00:00', '23:59');
-INSERT INTO ClassSession (ClassSection_ID, DayOfWeek, StartTime, EndTime) VALUES (1, 3, '00:00', '23:59');
-INSERT INTO ClassSession (ClassSection_ID, DayOfWeek, StartTime, EndTime) VALUES (1, 4, '00:00', '23:59');
-INSERT INTO ClassSession (ClassSection_ID, DayOfWeek, StartTime, EndTime) VALUES (1, 5, '00:00', '23:59');
-INSERT INTO ClassSession (ClassSection_ID, DayOfWeek, StartTime, EndTime) VALUES (1, 6, '00:00', '23:59');
+-- Sample Class Sessions (Realistic Times)
+-- Moday & Wednesday (DayOfWeek 1 and 3)
+INSERT INTO ClassSession (ClassSection_ID, DayOfWeek, StartTime, EndTime) VALUES (1, 1, '08:00', '10:00');
+INSERT INTO ClassSession (ClassSection_ID, DayOfWeek, StartTime, EndTime) VALUES (1, 3, '08:00', '10:00');
+
+-- Tuesday & Thursday (DayOfWeek 2 and 4)
+INSERT INTO ClassSession (ClassSection_ID, DayOfWeek, StartTime, EndTime) VALUES (2, 2, '13:00', '15:00');
+INSERT INTO ClassSession (ClassSection_ID, DayOfWeek, StartTime, EndTime) VALUES (2, 4, '13:00', '15:00');

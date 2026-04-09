@@ -38,17 +38,14 @@ Partial Class Form1
         Button1 = New Button()
         Button2 = New Button()
         Button3 = New Button()
-        TextBox6 = New TextBox()
-        Label7 = New Label()
         CType(PictureBox1, ComponentModel.ISupportInitialize).BeginInit()
         SuspendLayout()
         ' 
         ' TextBox1
         ' 
-        TextBox1.Enabled = False
-        TextBox1.Location = New Point(270, 43)
+        TextBox1.Location = New Point(181, 43)
         TextBox1.Name = "TextBox1"
-        TextBox1.Size = New Size(325, 27)
+        TextBox1.Size = New Size(414, 27)
         TextBox1.TabIndex = 0
         ' 
         ' TextBox2
@@ -180,25 +177,9 @@ Partial Class Form1
         Button3.Text = "SAVE DATA"
         Button3.UseVisualStyleBackColor = True
         ' 
-        ' TextBox6
-        ' 
-        TextBox6.Location = New Point(181, 43)
-        TextBox6.Name = "TextBox6"
-        TextBox6.Size = New Size(67, 27)
-        TextBox6.TabIndex = 0
-        ' 
-        ' Label7
-        ' 
-        Label7.AutoSize = True
-        Label7.Location = New Point(251, 45)
-        Label7.Name = "Label7"
-        Label7.Size = New Size(15, 20)
-        Label7.TabIndex = 6
-        Label7.Text = "-"
-        ' 
         ' Form1
         ' 
-        AutoScaleDimensions = New SizeF(8F, 20F)
+        AutoScaleDimensions = New SizeF(8.0F, 20.0F)
         AutoScaleMode = AutoScaleMode.Font
         AutoSizeMode = AutoSizeMode.GrowAndShrink
         ClientSize = New Size(910, 359)
@@ -211,14 +192,12 @@ Partial Class Form1
         Controls.Add(Label2)
         Controls.Add(Label5)
         Controls.Add(Label3)
-        Controls.Add(Label7)
         Controls.Add(Label1)
         Controls.Add(TextBox5)
         Controls.Add(ComboBox1)
         Controls.Add(TextBox3)
         Controls.Add(TextBox4)
         Controls.Add(TextBox2)
-        Controls.Add(TextBox6)
         Controls.Add(TextBox1)
         Name = "Form1"
         StartPosition = FormStartPosition.CenterScreen
@@ -244,7 +223,5 @@ Partial Class Form1
     Friend WithEvents Button1 As Button
     Friend WithEvents Button2 As Button
     Friend WithEvents Button3 As Button
-    Friend WithEvents TextBox6 As TextBox
-    Friend WithEvents Label7 As Label
 
 End Class

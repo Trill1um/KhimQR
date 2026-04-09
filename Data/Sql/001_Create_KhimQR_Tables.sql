@@ -1,8 +1,3 @@
-CREATE TABLE IF NOT EXISTS Autonumber (
-    pfx TEXT NOT NULL PRIMARY KEY,
-    NewNumber TEXT NOT NULL
-);
-
 CREATE TABLE IF NOT EXISTS Professor (
     Professor_ID INTEGER PRIMARY KEY AUTOINCREMENT,
     FirstName TEXT NOT NULL,
@@ -63,3 +58,22 @@ CREATE TABLE IF NOT EXISTS Attendance (
     FOREIGN KEY (Enrollment_ID) REFERENCES Enrollment(Enrollment_ID) ON DELETE CASCADE,
     UNIQUE(ClassSession_ID, Enrollment_ID, Date_Stamp)
 );
+
+INSERT OR IGNORE INTO Professor (Professor_ID, FirstName, MiddleName, LastName) VALUES (1, 'John', 'D.', 'Smith');
+INSERT OR IGNORE INTO Professor (Professor_ID, FirstName, MiddleName, LastName) VALUES (2, 'Jane', 'A.', 'Doe');
+
+INSERT OR IGNORE INTO Course (Course_ID, Code, Name) VALUES (1, 'CS101', 'Intro to Programming');
+INSERT OR IGNORE INTO Course (Course_ID, Code, Name) VALUES (2, 'CS222', 'Advanced Computer Programming');
+INSERT OR IGNORE INTO Course (Course_ID, Code, Name) VALUES (3, 'MTH101', 'Calculus I');
+INSERT OR IGNORE INTO Course (Course_ID, Code, Name) VALUES (4, 'MTH202', 'Linear Algebra');
+INSERT OR IGNORE INTO Course (Course_ID, Code, Name) VALUES (5, 'ENG101', 'English Composition');
+
+-- Sample Class Sections
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (1, 1, 1, 'IT-1A', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (2, 2, 2, 'CS-2B', 15);
+
+-- Sample Class Sessions
+INSERT OR IGNORE INTO ClassSession (ClassSession_ID, ClassSection_ID, DayOfWeek, StartTime, EndTime) VALUES (1, 1, 1, '08:00', '10:00');
+INSERT OR IGNORE INTO ClassSession (ClassSession_ID, ClassSection_ID, DayOfWeek, StartTime, EndTime) VALUES (2, 1, 3, '08:00', '10:00');
+INSERT OR IGNORE INTO ClassSession (ClassSession_ID, ClassSection_ID, DayOfWeek, StartTime, EndTime) VALUES (3, 2, 2, '13:00', '15:00');
+INSERT OR IGNORE INTO ClassSession (ClassSession_ID, ClassSection_ID, DayOfWeek, StartTime, EndTime) VALUES (4, 2, 4, '13:00', '15:00');
