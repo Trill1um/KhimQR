@@ -138,19 +138,14 @@ Public Class Form1
             Throw New InvalidOperationException("Generate QR code first.")
         End If
 
-        Dim student As New StudentRecord With {
-            .StudentID = GetFullStudentId(),
-            .Firstname = TextBox2.Text,
-            .Middlename = TextBox4.Text,
-            .Lastname = TextBox3.Text,
-            .Course = ComboBox1.Text,
-            .Section = TextBox5.Text
+        Dim student As New Student With {
+            .Student_Code = GetFullStudentId(),
+            .FirstName = TextBox2.Text,
+            .MiddleName = TextBox4.Text,
+            .LastName = TextBox3.Text
         }
 
-        Using ms As New MemoryStream()
-            PictureBox1.Image.Save(ms, Imaging.ImageFormat.Png)
-            studentRepository.Save(sqlconn, student, ms.ToArray())
-        End Using
+        studentRepository.Save(sqlconn, student)
 
         qrStorageService.SaveToDefaultDirectory(PictureBox1.Image, GetFullStudentId())
     End Sub

@@ -62,43 +62,125 @@ Public Class Form2
                 Return
             End If
 
-            Dim student = GetStudent(decoded)
-            Dim timeIn As String
-            Dim dateStamp As String
-            Dim msg As String
+            ' 1. Use decoded as Student_Code, get Student ID
+            Dim studentRepo As New StudentRepository()
+            Dim student = studentRepo.GetByStudentCode(sqlconn, decoded)
 
             If student Is Nothing Then
-                msg = "Student Does Not" & Environment.NewLine & "Exist!"
                 TextBox1.Text = Nothing
                 TextBox2.Text = Nothing
                 TextBox4.Text = Nothing
                 TextBox3.Text = Nothing
                 TextBox6.Text = Nothing
                 TextBox5.Text = Nothing
-            Else
-                Dim existingAttendance = GetTodayAttendanceTime(decoded)
-                If existingAttendance Is Nothing Then
-                    timeIn = SaveAttendance(decoded)
-                    dateStamp = DateTime.Now.ToString("yyyy-MM-dd")
-                    msg = "Attendance" & Environment.NewLine & "Recorded!"
-                Else
-                    timeIn = existingAttendance.TimeIn
-                    dateStamp = existingAttendance.DateStamp
-                    msg = "Already" & Environment.NewLine & "Present!"
-                    'ShowAttendanceMessage("Already timed in on " & dateStamp & " at " & timeIn)
-                End If
+                Label7.Text = "Student Does Not" & Environment.NewLine & "Exist!"
+                Return
+            End If
 
-                TextBox1.Text = student.StudentID
-                TextBox2.Text = BuildDisplayName(student.Firstname, student.Middlename, student.Lastname)
-                TextBox4.Text = ResolveCourseCode(student.Course)
-                TextBox3.Text = student.Section
-                TextBox6.Text = timeIn
-                TextBox5.Text = dateStamp
+            ' 2. Find currently Active ClassSession based on DateTime.Now (or prompt professor)
+            ' For this generalized refactor, we find ANY Active ClassSession right now
+            Dim now As DateTime = DateTime.Now
+            Dim currentDayOfWeek As Integer = CInt(now.DayOfWeek)
+            Dim currentTime As String = now.ToString("HH:mm")
+
+            Dim activeSessionId As Integer = 0
+            Dim activeSectionId As Integer = 0
+            Dim gracePeriod As Integer = 0
+            Dim startTime As DateTime
+            Dim endTime As DateTime
+            Dim courseName As String = ""
+            Dim sectionName As String = ""
+
+            Dim sql As String = "SELECT cs.ClassSession_ID, c.ClassSection_ID, c.GracePeriodMinutes, cs.StartTime, cs.EndTime, cr.Name, c.SectionName " &
+                                "FROM ClassSession cs " &
+                                "JOIN ClassSection c ON cs.ClassSection_ID = c.ClassSection_ID " &
+                                "JOIN Course cr ON c.Course_ID = cr.Course_ID " &
+                                "WHERE cs.DayOfWeek = @dow AND cs.StartTime <= @time AND cs.EndTime >= @time LIMIT 1"
+
+            Using cmd As New SqliteCommand(sql, sqlconn)
+                cmd.Parameters.AddWithValue("@dow", currentDayOfWeek)
+                cmd.Parameters.AddWithValue("@time", currentTime)
+                Using reader = cmd.ExecuteReader()
+                    If reader.Read() Then
+                        activeSessionId = Convert.ToInt32(reader("ClassSession_ID"))
+                        activeSectionId = Convert.ToInt32(reader("ClassSection_ID"))
+                        gracePeriod = Convert.ToInt32(reader("GracePeriodMinutes"))
+                        startTime = DateTime.Parse(reader("StartTime").ToString())
+                        endTime = DateTime.Parse(reader("EndTime").ToString())
+                        courseName = reader("Name").ToString()
+                        sectionName = reader("SectionName").ToString()
+                    End If
+                End Using
+            End Using
+
+            If activeSessionId = 0 Then
+                Label7.Text = "Class Not In Session"
+                TextBox1.Text = student.Student_Code
+                TextBox2.Text = BuildDisplayName(student.FirstName, student.MiddleName, student.LastName)
                 lastHandledStudentId = decoded
                 lastHandledAtUtc = DateTime.UtcNow
+                Return
             End If
-            Label7.Text = msg
-        Catch
+
+            ' 3. Query Enrollment table using Student_ID and activeSectionId
+            Dim enrollmentRepo As New EnrollmentRepository()
+            Dim enrollment = enrollmentRepo.GetEnrollment(sqlconn, student.ID, activeSectionId)
+
+            If enrollment Is Nothing Then
+                MsgBox("Student Not Enrolled in Current Class Session", MsgBoxStyle.Exclamation, "System Message")
+                Label7.Text = "Not Enrolled"
+                lastHandledStudentId = decoded
+                lastHandledAtUtc = DateTime.UtcNow
+                Return
+            End If
+
+            ' 4. Is Student already in Database? (prevent duplicates)
+            Dim attendanceRepo As New AttendanceRepository()
+            Dim dateStamp As String = now.ToString("yyyy-MM-dd")
+
+            If attendanceRepo.HasRecord(sqlconn, enrollment.Enrollment_ID, activeSessionId, dateStamp) Then
+                Label7.Text = "Student Already" & Environment.NewLine & "Recorded"
+                lastHandledStudentId = decoded
+                lastHandledAtUtc = DateTime.UtcNow
+                Return
+            End If
+
+            ' 5. Determine Arrival status: Use exact DateTime and Grace Period
+            Dim arrivalTime As DateTime = New DateTime(now.Year, now.Month, now.Day, now.Hour, now.Minute, now.Second)
+            Dim sessionStart As DateTime = New DateTime(now.Year, now.Month, now.Day, startTime.Hour, startTime.Minute, 0)
+
+            Dim status As String = "Present"
+            If arrivalTime > sessionStart.AddMinutes(gracePeriod) Then
+                status = "Late"
+            End If
+
+            ' 6. Insert Attendance
+            Dim timeInAsStr As String = now.ToString("HH:mm:ss")
+            Dim att As New Attendance With {
+                .ClassSession_ID = activeSessionId,
+                .Enrollment_ID = enrollment.Enrollment_ID,
+                .Date_Stamp = dateStamp,
+                .TimeIn = timeInAsStr,
+                .Status = status
+            }
+
+            attendanceRepo.RecordAttendance(sqlconn, att)
+
+            Label7.Text = status & "!" & Environment.NewLine & "Attendance Recorded"
+
+            ' Populate UX details
+            TextBox1.Text = student.Student_Code
+            TextBox2.Text = BuildDisplayName(student.FirstName, student.MiddleName, student.LastName)
+            TextBox4.Text = courseName
+            TextBox3.Text = sectionName
+            TextBox6.Text = timeInAsStr
+            TextBox5.Text = dateStamp
+
+            lastHandledStudentId = decoded
+            lastHandledAtUtc = DateTime.UtcNow
+
+        Catch ex As Exception
+           ' Error handling
         End Try
     End Sub
 
