@@ -30,11 +30,13 @@ CREATE TABLE Student (
 CREATE TABLE ClassSection (
     ClassSection_ID INTEGER PRIMARY KEY AUTOINCREMENT,
     Course_ID INTEGER NOT NULL,
+    Section_ID INTEGER NOT NULL,
     Professor_ID INTEGER NOT NULL,
     SectionName TEXT NOT NULL,
     GracePeriodMinutes INTEGER NOT NULL DEFAULT 15,
     FOREIGN KEY (Course_ID) REFERENCES Course(Course_ID) ON DELETE CASCADE,
-    FOREIGN KEY (Professor_ID) REFERENCES Professor(Professor_ID) ON DELETE CASCADE
+    FOREIGN KEY (Professor_ID) REFERENCES Professor(Professor_ID) ON DELETE CASCADE,
+    UNIQUE(Course_ID, Section_ID)
 );
 
 CREATE TABLE ClassSession (
@@ -78,8 +80,8 @@ INSERT INTO Course (Code, Name) VALUES ('MTH202', 'Linear Algebra');
 INSERT INTO Course (Code, Name) VALUES ('ENG101', 'English Composition');
 
 -- Sample Class Sections
-INSERT INTO ClassSection (Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (1, 1, 'IT-1A', 15);
-INSERT INTO ClassSection (Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (2, 2, 'CS-2B', 15);
+INSERT INTO ClassSection (Course_ID, Section_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (1, 1, 1, 'IT-1A', 15);
+INSERT INTO ClassSection (Course_ID, Section_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (2, 2, 2, 'CS-2B', 15);
 
 -- Sample Class Sessions (Realistic Times)
 -- Moday & Wednesday (DayOfWeek 1 and 3)

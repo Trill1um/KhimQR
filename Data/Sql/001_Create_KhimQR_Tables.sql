@@ -22,11 +22,13 @@ CREATE TABLE IF NOT EXISTS Student (
 CREATE TABLE IF NOT EXISTS ClassSection (
     ClassSection_ID INTEGER PRIMARY KEY AUTOINCREMENT,
     Course_ID INTEGER NOT NULL,
+    Section_ID INTEGER NOT NULL,
     Professor_ID INTEGER NOT NULL,
     SectionName TEXT NOT NULL,
     GracePeriodMinutes INTEGER NOT NULL DEFAULT 15,
     FOREIGN KEY (Course_ID) REFERENCES Course(Course_ID) ON DELETE CASCADE,
-    FOREIGN KEY (Professor_ID) REFERENCES Professor(Professor_ID) ON DELETE CASCADE
+    FOREIGN KEY (Professor_ID) REFERENCES Professor(Professor_ID) ON DELETE CASCADE,
+    UNIQUE(Course_ID, Section_ID)
 );
 
 CREATE TABLE IF NOT EXISTS ClassSession (
@@ -69,8 +71,8 @@ INSERT OR IGNORE INTO Course (Course_ID, Code, Name) VALUES (4, 'MTH202', 'Linea
 INSERT OR IGNORE INTO Course (Course_ID, Code, Name) VALUES (5, 'ENG101', 'English Composition');
 
 -- Sample Class Sections
-INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (1, 1, 1, 'IT-1A', 15);
-INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (2, 2, 2, 'CS-2B', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Section_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (1, 1, 1, 1, 'IT-1A', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Section_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (2, 2, 2, 2, 'CS-2B', 15);
 
 -- Sample Class Sessions
 INSERT OR IGNORE INTO ClassSession (ClassSession_ID, ClassSection_ID, DayOfWeek, StartTime, EndTime) VALUES (1, 1, 1, '08:00', '10:00');

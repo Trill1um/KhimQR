@@ -15,23 +15,22 @@ Public Class Form2
     Private isShowingMessage As Boolean
 
     Private Sub Form2_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-#If DEBUG Then
         Dim panelTest As New Panel() With {.Dock = DockStyle.Top, .Height = 40, .BackColor = Color.LightYellow}
         Dim chkOverride As New CheckBox() With {.Text = "Override Time:", .Location = New System.Drawing.Point(10, 10), .AutoSize = True}
         Dim dtpTime As New DateTimePicker() With {.Format = DateTimePickerFormat.Custom, .CustomFormat = "yyyy-MM-dd HH:mm:ss", .Location = New System.Drawing.Point(120, 8), .Width = 200, .Enabled = False, .Value = DateTime.Now}
 
-        AddHandler chkOverride.CheckedChanged, Sub() 
+        AddHandler chkOverride.CheckedChanged, Sub()
                                                    dtpTime.Enabled = chkOverride.Checked
                                                    SystemClock.SimulatedTime = If(chkOverride.Checked, dtpTime.Value, Nothing)
                                                End Sub
-        AddHandler dtpTime.ValueChanged, Sub() 
+        AddHandler dtpTime.ValueChanged, Sub()
                                              If chkOverride.Checked Then SystemClock.SimulatedTime = dtpTime.Value
                                          End Sub
 
         panelTest.Controls.Add(chkOverride)
         panelTest.Controls.Add(dtpTime)
         Me.Controls.Add(panelTest)
-#End If
+        panelTest.BringToFront() ' Ensure it renders on top of the PictureBox
 
         frameTimer = New Timer() With {.Interval = 33}
         AddHandler frameTimer.Tick, AddressOf FrameTimer_Tick

@@ -41,10 +41,11 @@ End Class
 
 Public Class ClassSectionRepository
     Public Function Save(connection As SqliteConnection, classSection As ClassSection) As Integer
-        Const sql As String = "INSERT INTO ClassSection (Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (@Course_ID, @Professor_ID, @SectionName, @GracePeriodMinutes);" &
+        Const sql As String = "INSERT INTO ClassSection (Course_ID, Section_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (@Course_ID, @Section_ID, @Professor_ID, @SectionName, @GracePeriodMinutes);" &
                               "SELECT last_insert_rowid();"
         Using cmd As New SqliteCommand(sql, connection)
             cmd.Parameters.AddWithValue("@Course_ID", classSection.Course_ID)
+            cmd.Parameters.AddWithValue("@Section_ID", classSection.Section_ID)
             cmd.Parameters.AddWithValue("@Professor_ID", classSection.Professor_ID)
             cmd.Parameters.AddWithValue("@SectionName", classSection.SectionName)
             cmd.Parameters.AddWithValue("@GracePeriodMinutes", classSection.GracePeriodMinutes)

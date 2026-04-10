@@ -58,7 +58,7 @@ Partial Class Main
         Button2.Size = New Size(221, 68)
         Button2.TabIndex = 3
         Button2.TabStop = False
-        Button2.Text = "Add Student"
+        Button2.Text = "Add Data"
         Button2.UseVisualStyleBackColor = True
         ' 
         ' Button3

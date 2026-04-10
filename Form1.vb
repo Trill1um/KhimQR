@@ -2,7 +2,7 @@
 Imports System.IO
 Imports Microsoft.Data.Sqlite
 
-Public Class Form1
+Partial Public Class Form1
     Private ReadOnly qrCodeService As New QrCodeService()
     Private ReadOnly qrStorageService As New QrStorageService()
     Private ReadOnly studentRepository As New StudentRepository()
@@ -13,11 +13,15 @@ Public Class Form1
         LoadCourses()
     End Sub
 
-    Private Sub Button1_Click(sender As Object, e As EventArgs) Handles Button1.Click
+    Private Sub TextBox1_TextChanged(sender As Object, e As EventArgs) Handles TextBox1.TextChanged
+        GenerateQrPreview()
+    End Sub
+
+    Private Sub GenerateQrPreview()
         Try
             Dim size = Math.Min(PictureBox1.Width, PictureBox1.Height)
             Dim pixelsPerModule = Math.Max(1, size \ 25)
-            Dim input = GetFullStudentId()
+            Dim input = GetFullStudentCode()
 
             If String.IsNullOrWhiteSpace(input) Then
                 PictureBox1.Image = Nothing
@@ -41,98 +45,125 @@ Public Class Form1
         End Using
     End Sub
 
-    Private Function GetFullStudentId() As String
+    Private Function GetFullStudentCode() As String
         Return TextBox1.Text.Trim()
     End Function
 
-    Private Sub Button2_Click(sender As Object, e As EventArgs) Handles Button2.Click
+    Private Function isQrGenerated() As Boolean
         If PictureBox1.Image Is Nothing Then
             MsgBox("Generate QR code first.", MsgBoxStyle.Exclamation, "System Message:")
+            Return False
+        End If
+        Return True
+    End Function
+
+    Sub savestudentdata()
+        If Not isQrGenerated() Then
             Return
         End If
 
-        qrStorageService.SaveWithDialog(PictureBox1.Image, GetFullStudentId())
+        Dim studentCode = GetFullStudentCode()
+        Dim sectionInput As String = TextBox5.Text.Trim()
+        Dim courseId As Integer = 0
+
+        If String.IsNullOrWhiteSpace(studentCode) Then
+            Throw New InvalidOperationException("Please enter a Student Code.")
+        End If
+
+        If ComboBox1.SelectedItem Is Nothing OrElse String.IsNullOrWhiteSpace(sectionInput) Then
+            Throw New InvalidOperationException("Please select a Course and provide a Section.")
+        End If
+
+        Dim selectedCourse As String = ComboBox1.SelectedItem.ToString()
+        Dim courseCode As String = selectedCourse.Split("-"c)(0).Trim()
+
+        Using cmd As New SqliteCommand("SELECT Course_ID FROM Course WHERE Code = @c", sqlconn)
+            cmd.Parameters.AddWithValue("@c", courseCode)
+            Dim res = cmd.ExecuteScalar()
+            If res IsNot Nothing AndAlso Not DBNull.Value.Equals(res) Then
+                courseId = Convert.ToInt32(res)
+            Else
+                Throw New InvalidOperationException($"The selected course '{courseCode}' does not exist in the database.")
+            End If
+        End Using
+
+        Dim parsedSectionId As Integer
+        If Integer.TryParse(sectionInput, parsedSectionId) Then
+            SaveStudentData(courseId, parsedSectionId, studentCode)
+        Else
+            SaveStudentData(courseId, sectionInput, studentCode)
+        End If
+
+        qrStorageService.SaveToDefaultDirectory(PictureBox1.Image, studentCode)
     End Sub
 
-    Sub savestudentdata()
-        If PictureBox1.Image Is Nothing Then
-            Throw New InvalidOperationException("Generate QR code first.")
-        End If
+    Private Sub SaveStudentData(courseId As Integer, sectionId As Integer, studentCode As String)
+        Dim classSectionId As Integer = 0
 
-        Dim student As New Student With {
-            .Student_Code = GetFullStudentId(),
-            .FirstName = TextBox2.Text,
-            .MiddleName = TextBox4.Text,
-            .LastName = TextBox3.Text
-        }
+        Using cmd As New SqliteCommand("SELECT ClassSection_ID FROM ClassSection WHERE Course_ID = @c AND Section_ID = @sid", sqlconn)
+            cmd.Parameters.AddWithValue("@c", courseId)
+            cmd.Parameters.AddWithValue("@sid", sectionId)
+            Dim res = cmd.ExecuteScalar()
+            If res IsNot Nothing AndAlso Not DBNull.Value.Equals(res) Then
+                classSectionId = Convert.ToInt32(res)
+            Else
+                Throw New InvalidOperationException($"The class section ID '{sectionId}' for the selected course does not exist. Please create this section in the database.")
+            End If
+        End Using
 
-        studentRepository.Save(sqlconn, student)
+        SaveStudentAndEnroll(studentCode, classSectionId)
+    End Sub
 
-        ' Reload student to get ID
-        student = studentRepository.GetByStudentCode(sqlconn, student.Student_Code)
+    Private Sub SaveStudentData(courseId As Integer, sectionName As String, studentCode As String)
+        Dim classSectionId As Integer = 0
 
-        ' Try Enrolling
-        If ComboBox1.SelectedItem IsNot Nothing AndAlso Not String.IsNullOrWhiteSpace(TextBox5.Text) Then
-            Dim selectedCourse As String = ComboBox1.SelectedItem.ToString()
-            Dim courseCode As String = selectedCourse.Split("-"c)(0).Trim()
-            Dim sectionName As String = TextBox5.Text.Trim()
+        Using cmd As New SqliteCommand("SELECT ClassSection_ID FROM ClassSection WHERE Course_ID = @c AND SectionName = @s", sqlconn)
+            cmd.Parameters.AddWithValue("@c", courseId)
+            cmd.Parameters.AddWithValue("@s", sectionName)
+            Dim res = cmd.ExecuteScalar()
+            If res IsNot Nothing AndAlso Not DBNull.Value.Equals(res) Then
+                classSectionId = Convert.ToInt32(res)
+            Else
+                Throw New InvalidOperationException($"The class section '{sectionName}' for the selected course does not exist. Please create this section in the database.")
+            End If
+        End Using
 
-            Dim courseId As Integer = 0
-            Using cmd As New SqliteCommand("SELECT Course_ID FROM Course WHERE Code = @c", sqlconn)
-                cmd.Parameters.AddWithValue("@c", courseCode)
-                Dim res = cmd.ExecuteScalar()
-                If res IsNot Nothing AndAlso Not DBNull.Value.Equals(res) Then
-                    courseId = Convert.ToInt32(res)
-                End If
-            End Using
+        SaveStudentAndEnroll(studentCode, classSectionId)
+    End Sub
 
-            If courseId > 0 Then
-                Dim classSectionId As Integer = 0
-                Using cmd As New SqliteCommand("SELECT ClassSection_ID FROM ClassSection WHERE Course_ID = @c AND SectionName = @s", sqlconn)
-                    cmd.Parameters.AddWithValue("@c", courseId)
-                    cmd.Parameters.AddWithValue("@s", sectionName)
-                    Dim res = cmd.ExecuteScalar()
-                    If res IsNot Nothing AndAlso Not DBNull.Value.Equals(res) Then
-                        classSectionId = Convert.ToInt32(res)
-                    End If
+    Private Sub SaveStudentAndEnroll(studentCode As String, classSectionId As Integer)
+        Using tx = sqlconn.BeginTransaction()
+            Dim student = studentRepository.GetByStudentCode(sqlconn, studentCode)
+
+            If student Is Nothing Then
+                student = New Student With {
+                    .Student_Code = studentCode,
+                    .FirstName = TextBox2.Text,
+                    .MiddleName = TextBox4.Text,
+                    .LastName = TextBox3.Text
+                }
+
+                Const insertStudentSql As String = "INSERT INTO Student (Student_Code, FirstName, MiddleName, LastName) VALUES (@Student_Code, @FirstName, @MiddleName, @LastName)"
+                Using cmd As New SqliteCommand(insertStudentSql, sqlconn, tx)
+                    cmd.Parameters.AddWithValue("@Student_Code", student.Student_Code)
+                    cmd.Parameters.AddWithValue("@FirstName", student.FirstName)
+                    cmd.Parameters.AddWithValue("@MiddleName", If(String.IsNullOrWhiteSpace(student.MiddleName), DBNull.Value, student.MiddleName))
+                    cmd.Parameters.AddWithValue("@LastName", student.LastName)
+                    cmd.ExecuteNonQuery()
                 End Using
 
-                If classSectionId = 0 Then
-                    Dim profId As Integer = 1
-                    Using cmd As New SqliteCommand("SELECT Professor_ID FROM Professor LIMIT 1", sqlconn)
-                        Dim res = cmd.ExecuteScalar()
-                        If res IsNot Nothing Then profId = Convert.ToInt32(res)
-                    End Using
-
-                    Dim repo As New ClassSectionRepository()
-                    classSectionId = repo.Save(sqlconn, New ClassSection With {
-                        .Course_ID = courseId,
-                        .Professor_ID = profId,
-                        .SectionName = sectionName,
-                        .GracePeriodMinutes = 15
-                    })
-
-                    ' Add default all-day session for testing
-                    Dim sessionRepo As New ClassSessionRepository()
-                    For i As Integer = 0 To 6
-                        sessionRepo.Save(sqlconn, New ClassSession With {
-                            .ClassSection_ID = classSectionId,
-                            .DayOfWeek = i,
-                            .StartTime = "00:00",
-                            .EndTime = "23:59"
-                        })
-                    Next
-                End If
-
-                Dim enrolRepo As New EnrollmentRepository()
-                enrolRepo.Save(sqlconn, New Enrollment With {
-                    .Student_ID = student.ID,
-                    .ClassSection_ID = classSectionId
-                })
+                student = studentRepository.GetByStudentCode(sqlconn, studentCode)
             End If
-        End If
 
-        qrStorageService.SaveToDefaultDirectory(PictureBox1.Image, GetFullStudentId())
+            Const enrollSql As String = "INSERT OR IGNORE INTO Enrollment (ClassSection_ID, Student_ID) VALUES (@ClassSection_ID, @Student_ID)"
+            Using cmd As New SqliteCommand(enrollSql, sqlconn, tx)
+                cmd.Parameters.AddWithValue("@ClassSection_ID", classSectionId)
+                cmd.Parameters.AddWithValue("@Student_ID", student.ID)
+                cmd.ExecuteNonQuery()
+            End Using
+
+            tx.Commit()
+        End Using
     End Sub
 
     Private Sub Button3_Click(sender As Object, e As EventArgs) Handles Button3.Click
