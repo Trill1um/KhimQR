@@ -15,6 +15,7 @@ Public Class MainForm
         AddHandler home.ShowAdminRequested, AddressOf Home_ShowAdminRequested
         AddHandler home.ShowAddRequested, AddressOf Home_ShowAddRequested
         AddHandler home.ShowAttendanceRequested, AddressOf Home_ShowAttendanceRequested
+        AddHandler home.ShowEnrollmentRequested, AddressOf Home_ShowEnrollmentRequested
         pageManager.Navigate(home)
         currentPageLabel.Text = "Home"
     End Sub
@@ -29,10 +30,15 @@ Public Class MainForm
         currentPageLabel.Text = "Add Data"
     End Sub
 
+    Private Sub Home_ShowEnrollmentRequested(sender As Object, e As EventArgs)
+        pageManager.Navigate(New EnrollmentForm())
+        currentPageLabel.Text = "Enrollment"
+    End Sub
+
     Private Sub Home_ShowAttendanceRequested(sender As Object, e As EventArgs)
         Using loginForm As New ProfessorLoginForm()
             If loginForm.ShowDialog(Me) = DialogResult.OK Then
-                Dim scanner As New Form2() With {
+                Dim scanner As New AttendanceForm() With {
                     .CurrentProfessorId = loginForm.SelectedProfessorId
                 }
                 pageManager.Navigate(scanner)

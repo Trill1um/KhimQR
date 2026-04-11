@@ -2,7 +2,7 @@
 Imports OpenCvSharp
 Imports OpenCvSharp.Extensions
 
-Public Class Form2
+Public Class AttendanceForm
     <System.ComponentModel.DesignerSerializationVisibility(System.ComponentModel.DesignerSerializationVisibility.Hidden)>
     Public Property CurrentProfessorId As Integer
     Private camera As VideoCapture

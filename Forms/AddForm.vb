@@ -41,18 +41,18 @@ Partial Class AddForm
             Case "ClassSection"
                 AddField("Course")
                 AddField("Professor_ID")
-                AddField("SectionName")
+                AddField("SectionName", "", True)
                 AddField("GracePeriodMinutes", "15")
             Case "ClassSession"
                 AddField("Course")
-                AddField("SectionName")
+                AddField("SectionName", "", False)
                 AddField("DayOfWeek")
                 AddField("StartTime (HH:mm)")
                 AddField("EndTime (HH:mm)")
         End Select
     End Sub
 
-    Private Sub AddField(caption As String, Optional defaultValue As String = "")
+    Private Sub AddField(caption As String, Optional defaultValue As String = "", Optional allowTypedSectionName As Boolean = False)
         Dim row As New Panel() With {.Width = 470, .Height = 56}
 
         Dim label As New Label() With {
@@ -119,7 +119,8 @@ Partial Class AddForm
             inputControl = CreateLookupCombo(
                 "SELECT DISTINCT SectionName AS DisplayText, SectionName FROM ClassSection ORDER BY SectionName",
                 "DisplayText",
-                "SectionName")
+                "SectionName",
+                If(allowTypedSectionName, ComboBoxStyle.DropDown, ComboBoxStyle.DropDownList))
         Else
             inputControl = New TextBox() With {
                 .Left = 0,
@@ -136,7 +137,7 @@ Partial Class AddForm
         controlsByField(key) = inputControl
     End Sub
 
-    Private Function CreateLookupCombo(sql As String, displayMember As String, valueMember As String) As ComboBox
+    Private Function CreateLookupCombo(sql As String, displayMember As String, valueMember As String, Optional style As ComboBoxStyle = ComboBoxStyle.DropDownList) As ComboBox
         If sqlconn Is Nothing OrElse sqlconn.State <> ConnectionState.Open Then
             connect()
         End If
@@ -152,7 +153,7 @@ Partial Class AddForm
             .Left = 0,
             .Top = 22,
             .Width = 460,
-            .DropDownStyle = ComboBoxStyle.DropDownList,
+            .DropDownStyle = style,
             .DataSource = table,
             .DisplayMember = displayMember,
             .ValueMember = valueMember

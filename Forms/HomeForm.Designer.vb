@@ -26,6 +26,7 @@ Partial Class HomeForm
         Button1 = New Button()
         Button2 = New Button()
         Button3 = New Button()
+        Button4 = New Button()
         SuspendLayout()
         ' 
         ' Label1
@@ -42,7 +43,7 @@ Partial Class HomeForm
         ' Button1
         ' 
         Button1.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        Button1.Location = New Point(54, 268)
+        Button1.Location = New Point(54, 230)
         Button1.Name = "Button1"
         Button1.Size = New Size(221, 68)
         Button1.TabIndex = 2
@@ -53,7 +54,7 @@ Partial Class HomeForm
         ' Button2
         ' 
         Button2.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        Button2.Location = New Point(375, 268)
+        Button2.Location = New Point(375, 230)
         Button2.Name = "Button2"
         Button2.Size = New Size(221, 68)
         Button2.TabIndex = 3
@@ -64,7 +65,7 @@ Partial Class HomeForm
         ' Button3
         ' 
         Button3.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        Button3.Location = New Point(681, 268)
+        Button3.Location = New Point(681, 230)
         Button3.Name = "Button3"
         Button3.Size = New Size(221, 68)
         Button3.TabIndex = 4
@@ -72,11 +73,23 @@ Partial Class HomeForm
         Button3.Text = "Check Attendance"
         Button3.UseVisualStyleBackColor = True
         ' 
+        ' Button4
+        ' 
+        Button4.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        Button4.Location = New Point(375, 314)
+        Button4.Name = "Button4"
+        Button4.Size = New Size(221, 68)
+        Button4.TabIndex = 5
+        Button4.TabStop = False
+        Button4.Text = "Enrollment"
+        Button4.UseVisualStyleBackColor = True
+        ' 
         ' HomeForm
         ' 
         AutoScaleDimensions = New SizeF(8F, 20F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(1004, 450)
+        Controls.Add(Button4)
         Controls.Add(Button3)
         Controls.Add(Button2)
         Controls.Add(Button1)
@@ -93,4 +106,5 @@ Partial Class HomeForm
     Friend WithEvents Button1 As Button
     Friend WithEvents Button2 As Button
     Friend WithEvents Button3 As Button
+    Friend WithEvents Button4 As Button
 End Class
