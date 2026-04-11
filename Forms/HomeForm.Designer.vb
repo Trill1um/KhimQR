@@ -1,5 +1,5 @@
 ﻿<Global.Microsoft.VisualBasic.CompilerServices.DesignerGenerated()> _
-Partial Class Main
+Partial Class HomeForm
     Inherits System.Windows.Forms.Form
 
     'Form overrides dispose to clean up the component list.
@@ -72,7 +72,7 @@ Partial Class Main
         Button3.Text = "Check Attendance"
         Button3.UseVisualStyleBackColor = True
         ' 
-        ' Main
+        ' HomeForm
         ' 
         AutoScaleDimensions = New SizeF(8F, 20F)
         AutoScaleMode = AutoScaleMode.Font
@@ -82,9 +82,9 @@ Partial Class Main
         Controls.Add(Button1)
         Controls.Add(Label1)
         FormBorderStyle = FormBorderStyle.FixedSingle
-        Name = "Main"
+        Name = "HomeForm"
         StartPosition = FormStartPosition.CenterScreen
-        Text = "Main"
+        Text = "Home"
         ResumeLayout(False)
         PerformLayout()
     End Sub
