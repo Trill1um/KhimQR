@@ -45,7 +45,7 @@ Partial Class AttendanceForm
         PictureBox1.BackColor = SystemColors.Control
         PictureBox1.Location = New Point(12, 12)
         PictureBox1.Name = "PictureBox1"
-        PictureBox1.Size = New Size(500, 500)
+        PictureBox1.Size = New Size(493, 426)
         PictureBox1.SizeMode = PictureBoxSizeMode.CenterImage
         PictureBox1.TabIndex = 0
         PictureBox1.TabStop = False
@@ -63,42 +63,42 @@ Partial Class AttendanceForm
         ' 
         TextBox1.BackColor = SystemColors.HighlightText
         TextBox1.Enabled = False
-        TextBox1.Location = New Point(614, 12)
+        TextBox1.Location = New Point(633, 12)
         TextBox1.Name = "TextBox1"
-        TextBox1.Size = New Size(267, 27)
+        TextBox1.Size = New Size(340, 27)
         TextBox1.TabIndex = 3
         ' 
         ' TextBox2
         ' 
         TextBox2.BackColor = SystemColors.HighlightText
         TextBox2.Enabled = False
-        TextBox2.Location = New Point(614, 51)
+        TextBox2.Location = New Point(633, 51)
         TextBox2.Name = "TextBox2"
-        TextBox2.Size = New Size(267, 27)
+        TextBox2.Size = New Size(340, 27)
         TextBox2.TabIndex = 3
         ' 
         ' TextBox4
         ' 
         TextBox4.BackColor = SystemColors.HighlightText
         TextBox4.Enabled = False
-        TextBox4.Location = New Point(614, 93)
+        TextBox4.Location = New Point(633, 93)
         TextBox4.Name = "TextBox4"
-        TextBox4.Size = New Size(93, 27)
+        TextBox4.Size = New Size(128, 27)
         TextBox4.TabIndex = 3
         ' 
         ' TextBox5
         ' 
         TextBox5.BackColor = SystemColors.HighlightText
         TextBox5.Enabled = False
-        TextBox5.Location = New Point(614, 132)
+        TextBox5.Location = New Point(633, 132)
         TextBox5.Name = "TextBox5"
-        TextBox5.Size = New Size(267, 27)
+        TextBox5.Size = New Size(340, 27)
         TextBox5.TabIndex = 3
         ' 
         ' Label1
         ' 
         Label1.AutoSize = True
-        Label1.Location = New Point(533, 15)
+        Label1.Location = New Point(536, 15)
         Label1.Name = "Label1"
         Label1.Size = New Size(75, 20)
         Label1.TabIndex = 4
@@ -107,7 +107,7 @@ Partial Class AttendanceForm
         ' Label2
         ' 
         Label2.AutoSize = True
-        Label2.Location = New Point(559, 54)
+        Label2.Location = New Point(562, 54)
         Label2.Name = "Label2"
         Label2.Size = New Size(49, 20)
         Label2.TabIndex = 4
@@ -116,7 +116,7 @@ Partial Class AttendanceForm
         ' Label3
         ' 
         Label3.AutoSize = True
-        Label3.Location = New Point(554, 96)
+        Label3.Location = New Point(557, 96)
         Label3.Name = "Label3"
         Label3.Size = New Size(54, 20)
         Label3.TabIndex = 4
@@ -125,7 +125,7 @@ Partial Class AttendanceForm
         ' Label5
         ' 
         Label5.AutoSize = True
-        Label5.Location = New Point(563, 135)
+        Label5.Location = New Point(566, 135)
         Label5.Name = "Label5"
         Label5.Size = New Size(41, 20)
         Label5.TabIndex = 4
@@ -135,15 +135,15 @@ Partial Class AttendanceForm
         ' 
         TextBox3.BackColor = SystemColors.HighlightText
         TextBox3.Enabled = False
-        TextBox3.Location = New Point(788, 93)
+        TextBox3.Location = New Point(847, 93)
         TextBox3.Name = "TextBox3"
-        TextBox3.Size = New Size(93, 27)
+        TextBox3.Size = New Size(126, 27)
         TextBox3.TabIndex = 3
         ' 
         ' Label6
         ' 
         Label6.AutoSize = True
-        Label6.Location = New Point(724, 96)
+        Label6.Location = New Point(783, 96)
         Label6.Name = "Label6"
         Label6.Size = New Size(58, 20)
         Label6.TabIndex = 4
@@ -153,15 +153,15 @@ Partial Class AttendanceForm
         ' 
         TextBox6.BackColor = SystemColors.HighlightText
         TextBox6.Enabled = False
-        TextBox6.Location = New Point(614, 172)
+        TextBox6.Location = New Point(633, 172)
         TextBox6.Name = "TextBox6"
-        TextBox6.Size = New Size(267, 27)
+        TextBox6.Size = New Size(340, 27)
         TextBox6.TabIndex = 3
         ' 
         ' Label4
         ' 
         Label4.AutoSize = True
-        Label4.Location = New Point(546, 175)
+        Label4.Location = New Point(549, 175)
         Label4.Name = "Label4"
         Label4.Size = New Size(58, 20)
         Label4.TabIndex = 4
@@ -169,19 +169,19 @@ Partial Class AttendanceForm
         ' 
         ' Label7
         ' 
-        Label7.Font = New Font("Segoe UI", 36F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        Label7.Location = New Point(533, 202)
+        Label7.Font = New Font("Segoe UI", 28.2F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        Label7.Location = New Point(536, 214)
         Label7.Name = "Label7"
-        Label7.Size = New Size(348, 345)
+        Label7.Size = New Size(437, 224)
         Label7.TabIndex = 5
         Label7.TextAlign = ContentAlignment.MiddleCenter
         Label7.UseMnemonic = False
         ' 
-        ' Form2
+        ' AttendanceForm
         ' 
         AutoScaleDimensions = New SizeF(8F, 20F)
         AutoScaleMode = AutoScaleMode.Font
-        ClientSize = New Size(913, 558)
+        ClientSize = New Size(1004, 450)
         Controls.Add(Label7)
         Controls.Add(Label4)
         Controls.Add(Label5)
@@ -197,7 +197,7 @@ Partial Class AttendanceForm
         Controls.Add(TextBox1)
         Controls.Add(Button2)
         Controls.Add(PictureBox1)
-        Name = "Form2"
+        Name = "AttendanceForm"
         StartPosition = FormStartPosition.CenterScreen
         Text = "Form2"
         CType(PictureBox1, ComponentModel.ISupportInitialize).EndInit()

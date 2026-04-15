@@ -27,6 +27,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="Forms\AdminForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\AdminForm.Designer.vb">
+      <DependentUpon>AdminForm.vb</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
+    <Compile Update="Forms\RoleLoginForm.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="Forms\RoleLoginForm.Designer.vb">
+      <DependentUpon>RoleLoginForm.vb</DependentUpon>
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+    </Compile>
     <Compile Update="My Project\Application.Designer.vb">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -40,6 +56,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Update="Forms\AdminForm.resx">
+      <DependentUpon>AdminForm.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Update="My Project\Resources.resx">
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
@@ -49,6 +68,9 @@
 
   <ItemGroup>
     <None Update="Data\Sql\001_Create_KhimQR_Tables.sql">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\Sql\002_Seed_KhimQR_Data.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Data\Sql\999_Reset_KhimQR_Database.sql">

@@ -65,7 +65,7 @@ Partial Class HomeForm
         ' Button3
         ' 
         Button3.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        Button3.Location = New Point(681, 230)
+        Button3.Location = New Point(728, 230)
         Button3.Name = "Button3"
         Button3.Size = New Size(221, 68)
         Button3.TabIndex = 4

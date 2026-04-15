@@ -18,6 +18,7 @@ Partial Class MainForm
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
         topPanel = New Panel()
+        logoutButton = New Button()
         currentPageLabel = New Label()
         homeButton = New Button()
         pageHostPanel = New Panel()
@@ -26,13 +27,25 @@ Partial Class MainForm
         ' 
         ' topPanel
         ' 
+        topPanel.Controls.Add(logoutButton)
         topPanel.Controls.Add(currentPageLabel)
         topPanel.Controls.Add(homeButton)
         topPanel.Dock = DockStyle.Top
         topPanel.Location = New Point(0, 0)
         topPanel.Name = "topPanel"
-        topPanel.Size = New Size(1100, 56)
+        topPanel.Size = New Size(1004, 56)
         topPanel.TabIndex = 0
+        ' 
+        ' logoutButton
+        ' 
+        logoutButton.Anchor = AnchorStyles.Top Or AnchorStyles.Right
+        logoutButton.Location = New Point(898, 12)
+        logoutButton.Name = "logoutButton"
+        logoutButton.Size = New Size(94, 32)
+        logoutButton.TabIndex = 2
+        logoutButton.Text = "Logout"
+        logoutButton.UseVisualStyleBackColor = True
+        logoutButton.Visible = False
         ' 
         ' currentPageLabel
         ' 
@@ -40,7 +53,7 @@ Partial Class MainForm
         currentPageLabel.Font = New Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         currentPageLabel.Location = New Point(124, 14)
         currentPageLabel.Name = "currentPageLabel"
-        currentPageLabel.Size = New Size(62, 28)
+        currentPageLabel.Size = New Size(68, 28)
         currentPageLabel.TabIndex = 1
         currentPageLabel.Text = "Home"
         ' 
@@ -58,14 +71,14 @@ Partial Class MainForm
         pageHostPanel.Dock = DockStyle.Fill
         pageHostPanel.Location = New Point(0, 56)
         pageHostPanel.Name = "pageHostPanel"
-        pageHostPanel.Size = New Size(1100, 594)
+        pageHostPanel.Size = New Size(1004, 450)
         pageHostPanel.TabIndex = 1
         ' 
         ' MainForm
         ' 
-        AutoScaleDimensions = New SizeF(8.0!, 20.0!)
+        AutoScaleDimensions = New SizeF(8F, 20F)
         AutoScaleMode = AutoScaleMode.Font
-        ClientSize = New Size(1100, 650)
+        ClientSize = New Size(1004, 506)
         Controls.Add(pageHostPanel)
         Controls.Add(topPanel)
         Name = "MainForm"
@@ -79,5 +92,6 @@ Partial Class MainForm
     Friend WithEvents topPanel As Panel
     Friend WithEvents currentPageLabel As Label
     Friend WithEvents homeButton As Button
+    Friend WithEvents logoutButton As Button
     Friend WithEvents pageHostPanel As Panel
 End Class
