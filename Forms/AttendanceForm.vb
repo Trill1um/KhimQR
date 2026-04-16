@@ -162,7 +162,7 @@ Public Class AttendanceForm
             End If
 
             If enrollmentId = 0 Then
-                MsgBox($"Not Enrolled in {courseName} / {sectionName}")
+                ShowAttendanceMessage($"Not Enrolled in {courseName} / {sectionName}")
                 TextBox1.Text = student.Student_Code
                 TextBox2.Text = BuildDisplayName(student.FirstName, student.MiddleName, student.LastName)
                 TextBox4.Text = courseName
