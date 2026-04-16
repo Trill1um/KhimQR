@@ -22,7 +22,6 @@ End Class
 Public Class ClassSection
     Public Property ClassSection_ID As Integer
     Public Property Course_ID As Integer
-    Public Property Section_ID As Integer
     Public Property Professor_ID As Integer
     Public Property SectionName As String
     Public Property GracePeriodMinutes As Integer

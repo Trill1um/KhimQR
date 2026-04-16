@@ -191,14 +191,9 @@ Partial Class AddForm
                 Case "ClassSection"
                     Dim courseId = GetInt("Course")
                     Dim sectionName = GetRequired("SectionName")
-                    Dim sectionId = GetOrCreateSectionId(sectionName)
 
-                    If sectionId = 0 Then
-                        sectionId = GetNextSectionId()
-                    End If
-
-                    If ClassSectionComboExists(courseId, sectionId) Then
-                        MessageBox.Show("That Course_ID and Section_ID combination already exists.", "Add", MessageBoxButtons.OK, MessageBoxIcon.Information)
+                    If ClassSectionComboExists(courseId, sectionName) Then
+                        MessageBox.Show("That Course_ID and SectionName combination already exists.", "Add", MessageBoxButtons.OK, MessageBoxIcon.Information)
                         Return
                     End If
 
@@ -207,7 +202,6 @@ Partial Class AddForm
 
                     classSectionRepository.Save(sqlconn, New ClassSection With {
                         .Course_ID = courseId,
-                        .Section_ID = sectionId,
                         .Professor_ID = professorId,
                         .SectionName = sectionName,
                         .GracePeriodMinutes = grace
@@ -233,30 +227,12 @@ Partial Class AddForm
         End Try
     End Sub
 
-    Private Function ClassSectionComboExists(courseId As Integer, sectionId As Integer) As Boolean
-        Using cmd As New SqliteCommand("SELECT 1 FROM ClassSection WHERE Course_ID = @c AND Section_ID = @sid LIMIT 1", sqlconn)
+    Private Function ClassSectionComboExists(courseId As Integer, sectionName As String) As Boolean
+        Using cmd As New SqliteCommand("SELECT 1 FROM ClassSection WHERE Course_ID = @c AND SectionName = @s LIMIT 1", sqlconn)
             cmd.Parameters.AddWithValue("@c", courseId)
-            cmd.Parameters.AddWithValue("@sid", sectionId)
-            Dim res = cmd.ExecuteScalar()
-            Return res IsNot Nothing AndAlso Not DBNull.Value.Equals(res)
-        End Using
-    End Function
-
-    Private Function GetOrCreateSectionId(sectionName As String) As Integer
-        Using cmd As New SqliteCommand("SELECT Section_ID FROM ClassSection WHERE SectionName = @s LIMIT 1", sqlconn)
             cmd.Parameters.AddWithValue("@s", sectionName)
             Dim res = cmd.ExecuteScalar()
-            If res IsNot Nothing AndAlso Not DBNull.Value.Equals(res) Then
-                Return Convert.ToInt32(res)
-            End If
-        End Using
-
-        Return 0
-    End Function
-
-    Private Function GetNextSectionId() As Integer
-        Using cmd As New SqliteCommand("SELECT COALESCE(MAX(Section_ID), 0) + 1 FROM ClassSection", sqlconn)
-            Return Convert.ToInt32(cmd.ExecuteScalar())
+            Return res IsNot Nothing AndAlso Not DBNull.Value.Equals(res)
         End Using
     End Function
 

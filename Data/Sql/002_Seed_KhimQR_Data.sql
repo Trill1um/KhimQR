@@ -63,14 +63,14 @@ SELECT
 FROM seq;
 
 -- Seed Class Sections (8 total, assigned to 8 courses so only 2 courses have no section)
-INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Section_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (1, 1, 1, 1, 'BSCS-1A', 15);
-INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Section_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (2, 2, 1, 2, 'BSCS-1B', 15);
-INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Section_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (3, 3, 1, 3, 'BSCS-2A', 15);
-INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Section_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (4, 4, 1, 4, 'BSCS-2B', 15);
-INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Section_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (5, 5, 1, 5, 'BSCS-3A', 15);
-INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Section_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (6, 6, 1, 1, 'BSCS-3B', 15);
-INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Section_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (7, 7, 1, 2, 'BSCS-4A', 15);
-INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Section_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (8, 8, 1, 3, 'BSCS-4B', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (1, 1, 1, 'BSCS-1A', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (2, 2, 2, 'BSCS-1B', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (3, 3, 3, 'BSCS-2A', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (4, 4, 4, 'BSCS-2B', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (5, 5, 5, 'BSCS-3A', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (6, 6, 1, 'BSCS-3B', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (7, 7, 2, 'BSCS-4A', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (8, 8, 3, 'BSCS-4B', 15);
 
 -- Seed Class Sessions (per section: 3-6 days/week, 3-5 sessions/day)
 WITH section_rules(ClassSection_ID, DayCount, SessionCount) AS (

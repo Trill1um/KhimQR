@@ -22,7 +22,6 @@ Partial Class EnrollmentForm
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        TextBox1 = New TextBox()
         TextBox2 = New TextBox()
         TextBox3 = New TextBox()
         TextBox4 = New TextBox()
@@ -35,14 +34,8 @@ Partial Class EnrollmentForm
         Label5 = New Label()
         Label6 = New Label()
         Button3 = New Button()
+        TextBox1 = New TextBox()
         SuspendLayout()
-        ' 
-        ' TextBox1
-        ' 
-        TextBox1.Location = New Point(338, 57)
-        TextBox1.Name = "TextBox1"
-        TextBox1.Size = New Size(415, 27)
-        TextBox1.TabIndex = 0
         ' 
         ' TextBox2
         ' 
@@ -149,6 +142,13 @@ Partial Class EnrollmentForm
         Button3.Text = "ENROLL STUDENT"
         Button3.UseVisualStyleBackColor = True
         ' 
+        ' TextBox1
+        ' 
+        TextBox1.Location = New Point(338, 57)
+        TextBox1.Name = "TextBox1"
+        TextBox1.Size = New Size(415, 27)
+        TextBox1.TabIndex = 0
+        ' 
         ' EnrollmentForm
         ' 
         AutoScaleDimensions = New SizeF(8F, 20F)
@@ -173,8 +173,6 @@ Partial Class EnrollmentForm
         ResumeLayout(False)
         PerformLayout()
     End Sub
-
-    Friend WithEvents TextBox1 As TextBox
     Friend WithEvents TextBox2 As TextBox
     Friend WithEvents TextBox3 As TextBox
     Friend WithEvents TextBox4 As TextBox
@@ -187,4 +185,5 @@ Partial Class EnrollmentForm
     Friend WithEvents Label5 As Label
     Friend WithEvents Label6 As Label
     Friend WithEvents Button3 As Button
+    Friend WithEvents TextBox1 As TextBox
 End Class

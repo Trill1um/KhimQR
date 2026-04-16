@@ -22,13 +22,12 @@ CREATE TABLE IF NOT EXISTS Student (
 CREATE TABLE IF NOT EXISTS ClassSection (
     ClassSection_ID INTEGER PRIMARY KEY AUTOINCREMENT,
     Course_ID INTEGER NOT NULL,
-    Section_ID INTEGER NOT NULL,
     Professor_ID INTEGER NOT NULL,
     SectionName TEXT NOT NULL,
     GracePeriodMinutes INTEGER NOT NULL DEFAULT 15,
     FOREIGN KEY (Course_ID) REFERENCES Course(Course_ID) ON DELETE CASCADE,
     FOREIGN KEY (Professor_ID) REFERENCES Professor(Professor_ID) ON DELETE CASCADE,
-    UNIQUE(Course_ID, Section_ID)
+    UNIQUE(Course_ID, SectionName)
 );
 
 CREATE TABLE IF NOT EXISTS ClassSession (
@@ -59,4 +58,4 @@ CREATE TABLE IF NOT EXISTS Attendance (
     FOREIGN KEY (ClassSession_ID) REFERENCES ClassSession(ClassSession_ID) ON DELETE CASCADE,
     FOREIGN KEY (Enrollment_ID) REFERENCES Enrollment(Enrollment_ID) ON DELETE CASCADE,
     UNIQUE(ClassSession_ID, Enrollment_ID, Date_Stamp)
-);
+););
