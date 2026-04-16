@@ -42,6 +42,8 @@ Module ConnModule
                 ExecuteSqlFile("001_Create_KhimQR_Tables.sql")
             End If
 
+            EnsureEnrollmentDateColumn()
+
             If Not HasSeedData() Then
                 ExecuteSqlFile("002_Seed_KhimQR_Data.sql")
             End If
@@ -50,6 +52,23 @@ Module ConnModule
         Catch ex As Exception
             MessageBox.Show(ex.Message, "Schema Init", MessageBoxButtons.OK, MessageBoxIcon.Exclamation)
         End Try
+    End Sub
+
+    Private Sub EnsureEnrollmentDateColumn()
+        Const columnCheckSql As String = "SELECT COUNT(1) FROM pragma_table_info('Enrollment') WHERE name = 'EnrollmentDate'"
+        Using cmd As New SqliteCommand(columnCheckSql, sqlconn)
+            If Convert.ToInt32(cmd.ExecuteScalar()) > 0 Then
+                Return
+            End If
+        End Using
+
+        Using cmd As New SqliteCommand("ALTER TABLE Enrollment ADD COLUMN EnrollmentDate TEXT", sqlconn)
+            cmd.ExecuteNonQuery()
+        End Using
+
+        Using cmd As New SqliteCommand("UPDATE Enrollment SET EnrollmentDate = COALESCE(EnrollmentDate, date('2000-01-01')) WHERE EnrollmentDate IS NULL OR TRIM(EnrollmentDate) = ''", sqlconn)
+            cmd.ExecuteNonQuery()
+        End Using
     End Sub
 
     Private Function IsSchemaReady() As Boolean

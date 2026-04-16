@@ -107,10 +107,11 @@ End Class
 
 Public Class EnrollmentRepository
     Public Sub Save(connection As SqliteConnection, enrollment As Enrollment)
-        Const sql As String = "INSERT INTO Enrollment (ClassSection_ID, Student_ID) VALUES (@ClassSection_ID, @Student_ID)"
+        Const sql As String = "INSERT INTO Enrollment (ClassSection_ID, Student_ID, EnrollmentDate) VALUES (@ClassSection_ID, @Student_ID, @EnrollmentDate)"
         Using cmd As New SqliteCommand(sql, connection)
             cmd.Parameters.AddWithValue("@ClassSection_ID", enrollment.ClassSection_ID)
             cmd.Parameters.AddWithValue("@Student_ID", enrollment.Student_ID)
+            cmd.Parameters.AddWithValue("@EnrollmentDate", enrollment.EnrollmentDate)
             cmd.ExecuteNonQuery()
         End Using
     End Sub
@@ -125,7 +126,8 @@ Public Class EnrollmentRepository
                     Return New Enrollment() With {
                         .Enrollment_ID = Convert.ToInt32(reader("Enrollment_ID")),
                         .ClassSection_ID = Convert.ToInt32(reader("ClassSection_ID")),
-                        .Student_ID = Convert.ToInt32(reader("Student_ID"))
+                        .Student_ID = Convert.ToInt32(reader("Student_ID")),
+                        .EnrollmentDate = If(IsDBNull(reader("EnrollmentDate")), Nothing, reader("EnrollmentDate").ToString())
                     }
                 End If
             End Using

@@ -99,7 +99,8 @@ Partial Public Class EnrollmentForm
 
             enrollmentRepository.Save(sqlconn, New Enrollment With {
                 .Student_ID = currentStudent.ID,
-                .ClassSection_ID = classSectionId
+                .ClassSection_ID = classSectionId,
+                .EnrollmentDate = SystemClock.Today.ToString("yyyy-MM-dd")
             })
 
             MsgBox("Student enrolled successfully.", MsgBoxStyle.Information, "Enrollment")

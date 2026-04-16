@@ -5,7 +5,7 @@ INSERT OR IGNORE INTO Professor (Professor_ID, FirstName, MiddleName, LastName) 
 INSERT OR IGNORE INTO Professor (Professor_ID, FirstName, MiddleName, LastName) VALUES (4, 'Angela', 'P.', 'Garcia');
 INSERT OR IGNORE INTO Professor (Professor_ID, FirstName, MiddleName, LastName) VALUES (5, 'Victor', 'L.', 'Cruz');
 
--- Seed Courses (10 total, 2 intentionally without sections: Course_ID 9 and 10)
+-- Seed Courses (10 total)
 INSERT OR IGNORE INTO Course (Course_ID, Code, Name) VALUES (1, 'CS101', 'Introduction to Programming');
 INSERT OR IGNORE INTO Course (Course_ID, Code, Name) VALUES (2, 'CS102', 'Object-Oriented Programming');
 INSERT OR IGNORE INTO Course (Course_ID, Code, Name) VALUES (3, 'CS201', 'Data Structures');
@@ -62,57 +62,78 @@ SELECT
     END
 FROM seq;
 
--- Seed Class Sections (8 total, assigned to 8 courses so only 2 courses have no section)
-INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (1, 1, 1, 'BSCS-1A', 15);
-INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (2, 2, 2, 'BSCS-1B', 15);
-INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (3, 3, 3, 'BSCS-2A', 15);
-INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (4, 4, 4, 'BSCS-2B', 15);
-INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (5, 5, 5, 'BSCS-3A', 15);
-INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (6, 6, 1, 'BSCS-3B', 15);
-INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (7, 7, 2, 'BSCS-4A', 15);
-INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (8, 8, 3, 'BSCS-4B', 15);
+-- Seed Class Sections (20 total, two sections per course)
+-- A section is defined by Course + SectionName + Professor.
+-- Section names repeat across different courses, but a single section is owned by one professor only.
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (1, 1, 1, 'Block-A', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (2, 1, 2, 'Block-B', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (3, 2, 2, 'Block-A', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (4, 2, 3, 'Block-B', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (5, 3, 3, 'Block-A', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (6, 3, 4, 'Block-B', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (7, 4, 4, 'Block-A', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (8, 4, 5, 'Block-B', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (9, 5, 5, 'Block-A', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (10, 5, 1, 'Block-B', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (11, 6, 1, 'Block-A', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (12, 6, 3, 'Block-B', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (13, 7, 2, 'Block-A', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (14, 7, 4, 'Block-B', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (15, 8, 3, 'Block-A', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (16, 8, 5, 'Block-B', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (17, 9, 4, 'Block-A', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (18, 9, 1, 'Block-B', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (19, 10, 5, 'Block-A', 15);
+INSERT OR IGNORE INTO ClassSection (ClassSection_ID, Course_ID, Professor_ID, SectionName, GracePeriodMinutes) VALUES (20, 10, 2, 'Block-B', 15);
 
--- Seed Class Sessions (per section: 3-6 days/week, 3-5 sessions/day)
-WITH section_rules(ClassSection_ID, DayCount, SessionCount) AS (
-    SELECT 1, 3, 3 UNION ALL
-    SELECT 2, 4, 4 UNION ALL
-    SELECT 3, 5, 5 UNION ALL
-    SELECT 4, 6, 3 UNION ALL
-    SELECT 5, 3, 4 UNION ALL
-    SELECT 6, 4, 5 UNION ALL
-    SELECT 7, 5, 3 UNION ALL
-    SELECT 8, 6, 4
+-- Seed Class Sessions (non-overlapping schedules per professor and per student's multi-section load)
+WITH section_ids(ClassSection_ID) AS (
+    SELECT 1 UNION ALL SELECT 2 UNION ALL SELECT 3 UNION ALL SELECT 4 UNION ALL SELECT 5
+    UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8 UNION ALL SELECT 9 UNION ALL SELECT 10
+    UNION ALL SELECT 11 UNION ALL SELECT 12 UNION ALL SELECT 13 UNION ALL SELECT 14 UNION ALL SELECT 15
+    UNION ALL SELECT 16 UNION ALL SELECT 17 UNION ALL SELECT 18 UNION ALL SELECT 19 UNION ALL SELECT 20
 ),
-days(d) AS (
-    SELECT 1
-    UNION ALL
-    SELECT d + 1 FROM days WHERE d < 6
-),
-slots(s) AS (
-    SELECT 1
-    UNION ALL
-    SELECT s + 1 FROM slots WHERE s < 5
+session_seed AS (
+    SELECT
+        ClassSection_ID,
+        ((ClassSection_ID - 1) / 4) + 1 AS DayOfWeek,
+        CASE ((ClassSection_ID - 1) % 4)
+            WHEN 0 THEN '08:00'
+            WHEN 1 THEN '09:30'
+            WHEN 2 THEN '11:00'
+            ELSE '13:00'
+        END AS StartTime,
+        CASE ((ClassSection_ID - 1) % 4)
+            WHEN 0 THEN '09:15'
+            WHEN 1 THEN '10:45'
+            WHEN 2 THEN '12:15'
+            ELSE '14:15'
+        END AS EndTime
+    FROM section_ids
 )
-INSERT OR IGNORE INTO ClassSession (ClassSession_ID, ClassSection_ID, DayOfWeek, StartTime, EndTime)
-SELECT
-    ((sr.ClassSection_ID - 1) * 30) + ((d.d - 1) * 5) + s.s AS ClassSession_ID,
-    sr.ClassSection_ID,
-    d.d AS DayOfWeek,
-    substr(time('08:00', printf('+%d minutes', (s.s - 1) * 120)), 1, 5) AS StartTime,
-    substr(time('08:00', printf('+%d minutes', ((s.s - 1) * 120) + 90)), 1, 5) AS EndTime
-FROM section_rules sr
-JOIN days d ON d.d <= sr.DayCount
-JOIN slots s ON s.s <= sr.SessionCount;
+INSERT OR IGNORE INTO ClassSession (ClassSection_ID, DayOfWeek, StartTime, EndTime)
+SELECT ClassSection_ID, DayOfWeek, StartTime, EndTime
+FROM session_seed;
 
--- Seed Enrollment (100 students distributed across 8 sections)
+-- Seed Enrollment (each student is enrolled in multiple sections across different courses)
 WITH RECURSIVE seq(n) AS (
     SELECT 1
     UNION ALL
     SELECT n + 1 FROM seq WHERE n < 100
+),
+student_sections AS (
+    -- Day block 1 (ClassSection_ID 1-4)
+    SELECT n AS Student_ID, ((n - 1) % 4) + 1 AS ClassSection_ID FROM seq
+    UNION ALL
+    -- Day block 2 (ClassSection_ID 5-8)
+    SELECT n AS Student_ID, 4 + ((n - 1) % 4) + 1 AS ClassSection_ID FROM seq
+    UNION ALL
+    -- Day block 3 (ClassSection_ID 9-12)
+    SELECT n AS Student_ID, 8 + ((n - 1) % 4) + 1 AS ClassSection_ID FROM seq
 )
-INSERT OR IGNORE INTO Enrollment (Enrollment_ID, ClassSection_ID, Student_ID)
+INSERT OR IGNORE INTO Enrollment (ClassSection_ID, Student_ID, EnrollmentDate)
 SELECT
-    n,
-    ((n - 1) % 8) + 1 AS ClassSection_ID,
-    n AS Student_ID
-FROM seq;
+    ClassSection_ID,
+    Student_ID,
+    date('2026-04-16') AS EnrollmentDate
+FROM student_sections;

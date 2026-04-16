@@ -60,9 +60,12 @@ Public Class MainForm
                 currentPageLabel.Text = "Admin Home"
 
             Case UserRole.Professor
+                AttendanceAutoAbsentService.QueueFinalizeProfessorAbsences(currentProfessorId, SystemClock.Today)
+
                 Dim professorHome As New ProfessorHomeForm()
                 AddHandler professorHome.ShowAttendanceRequested, AddressOf Home_ShowAttendanceRequested
                 AddHandler professorHome.ShowProfessorPanelRequested, AddressOf Home_ShowProfessorPanelRequested
+                AddHandler professorHome.ShowProfessorAttendancePanelRequested, AddressOf Home_ShowProfessorAttendancePanelRequested
                 pageManager.Navigate(professorHome)
                 currentPageLabel.Text = "Professor Home"
 
@@ -105,5 +108,13 @@ Public Class MainForm
         }
         pageManager.Navigate(scanner)
         currentPageLabel.Text = "Attendance"
+    End Sub
+
+    Private Sub Home_ShowProfessorAttendancePanelRequested(sender As Object, e As EventArgs)
+        Dim attendancePanel As New ProfessorAttendancePanelForm() With {
+            .CurrentProfessorId = currentProfessorId
+        }
+        pageManager.Navigate(attendancePanel)
+        currentPageLabel.Text = "Attendance Panel"
     End Sub
 End Class

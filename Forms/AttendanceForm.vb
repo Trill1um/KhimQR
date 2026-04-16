@@ -126,13 +126,14 @@ Public Class AttendanceForm
                                 "FROM ClassSession cs " &
                                 "JOIN ClassSection c ON cs.ClassSection_ID = c.ClassSection_ID " &
                                 "JOIN Course cr ON c.Course_ID = cr.Course_ID " &
-                                "LEFT JOIN Enrollment e ON c.ClassSection_ID = e.ClassSection_ID AND e.Student_ID = @studentId " &
+                                "LEFT JOIN Enrollment e ON c.ClassSection_ID = e.ClassSection_ID AND e.Student_ID = @studentId AND e.EnrollmentDate <= @dateStamp " &
                                 "WHERE cs.DayOfWeek = @dow AND cs.StartTime <= @time AND cs.EndTime >= @time AND c.Professor_ID = @profId " &
                                 "ORDER BY e.Enrollment_ID DESC" ' Push the actual enrollment to the top of the results if it exists
 
             Using cmd As New SqliteCommand(sql, sqlconn)
                 cmd.Parameters.AddWithValue("@dow", currentDayOfWeek)
                 cmd.Parameters.AddWithValue("@time", currentTime)
+                cmd.Parameters.AddWithValue("@dateStamp", now.ToString("yyyy-MM-dd"))
                 cmd.Parameters.AddWithValue("@profId", CurrentProfessorId)
                 cmd.Parameters.AddWithValue("@studentId", student.ID)
                 Using reader = cmd.ExecuteReader()
@@ -189,7 +190,7 @@ Public Class AttendanceForm
             End If
 
             ' 6. Insert Attendance
-            Dim timeInAsStr As String = now.ToString("HH:mm:ss")
+            Dim timeInAsStr = now.ToString("HH:mm:ss")
             Dim att As New Attendance With {
                 .ClassSession_ID = activeSessionId,
                 .Enrollment_ID = enrollmentId,

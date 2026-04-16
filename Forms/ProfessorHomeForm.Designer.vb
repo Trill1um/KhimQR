@@ -20,12 +20,13 @@ Partial Class ProfessorHomeForm
         titleLabel = New Label()
         professorPanelButton = New Button()
         attendanceButton = New Button()
+        attendancePanelButton = New Button()
         SuspendLayout()
         ' 
         ' titleLabel
         ' 
         titleLabel.AutoSize = True
-        titleLabel.Font = New Font("Segoe UI", 36F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        titleLabel.Font = New Font("Segoe UI", 36.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         titleLabel.Location = New Point(204, 38)
         titleLabel.Name = "titleLabel"
         titleLabel.Size = New Size(603, 81)
@@ -35,8 +36,8 @@ Partial Class ProfessorHomeForm
         ' 
         ' professorPanelButton
         ' 
-        professorPanelButton.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        professorPanelButton.Location = New Point(208, 204)
+        professorPanelButton.Font = New Font("Segoe UI", 12.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        professorPanelButton.Location = New Point(122, 204)
         professorPanelButton.Name = "professorPanelButton"
         professorPanelButton.Size = New Size(253, 76)
         professorPanelButton.TabIndex = 1
@@ -45,19 +46,30 @@ Partial Class ProfessorHomeForm
         ' 
         ' attendanceButton
         ' 
-        attendanceButton.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        attendanceButton.Location = New Point(548, 204)
+        attendanceButton.Font = New Font("Segoe UI", 12.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        attendanceButton.Location = New Point(381, 204)
         attendanceButton.Name = "attendanceButton"
         attendanceButton.Size = New Size(253, 76)
         attendanceButton.TabIndex = 2
         attendanceButton.Text = "Check Attendance"
         attendanceButton.UseVisualStyleBackColor = True
         ' 
+        ' attendancePanelButton
+        ' 
+        attendancePanelButton.Font = New Font("Segoe UI", 12.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        attendancePanelButton.Location = New Point(640, 204)
+        attendancePanelButton.Name = "attendancePanelButton"
+        attendancePanelButton.Size = New Size(253, 76)
+        attendancePanelButton.TabIndex = 3
+        attendancePanelButton.Text = "Attendance Panel"
+        attendancePanelButton.UseVisualStyleBackColor = True
+        ' 
         ' ProfessorHomeForm
         ' 
-        AutoScaleDimensions = New SizeF(8F, 20F)
+        AutoScaleDimensions = New SizeF(8.0F, 20.0F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(1004, 450)
+        Controls.Add(attendancePanelButton)
         Controls.Add(attendanceButton)
         Controls.Add(professorPanelButton)
         Controls.Add(titleLabel)
@@ -72,4 +84,5 @@ Partial Class ProfessorHomeForm
     Friend WithEvents titleLabel As Label
     Friend WithEvents professorPanelButton As Button
     Friend WithEvents attendanceButton As Button
+    Friend WithEvents attendancePanelButton As Button
 End Class

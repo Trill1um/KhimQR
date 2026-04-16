@@ -39,6 +39,7 @@ Public Class Enrollment
     Public Property Enrollment_ID As Integer
     Public Property ClassSection_ID As Integer
     Public Property Student_ID As Integer
+    Public Property EnrollmentDate As String
 End Class
 
 Public Class Attendance

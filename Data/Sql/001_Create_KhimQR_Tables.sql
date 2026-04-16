@@ -43,6 +43,7 @@ CREATE TABLE IF NOT EXISTS Enrollment (
     Enrollment_ID INTEGER PRIMARY KEY AUTOINCREMENT,
     ClassSection_ID INTEGER NOT NULL,
     Student_ID INTEGER NOT NULL,
+    EnrollmentDate TEXT NOT NULL,
     FOREIGN KEY (ClassSection_ID) REFERENCES ClassSection(ClassSection_ID) ON DELETE CASCADE,
     FOREIGN KEY (Student_ID) REFERENCES Student(ID) ON DELETE CASCADE,
     UNIQUE(ClassSection_ID, Student_ID)
@@ -58,4 +59,4 @@ CREATE TABLE IF NOT EXISTS Attendance (
     FOREIGN KEY (ClassSession_ID) REFERENCES ClassSession(ClassSession_ID) ON DELETE CASCADE,
     FOREIGN KEY (Enrollment_ID) REFERENCES Enrollment(Enrollment_ID) ON DELETE CASCADE,
     UNIQUE(ClassSession_ID, Enrollment_ID, Date_Stamp)
-););
+);
