@@ -148,39 +148,43 @@ Public Class ProfessorAttendancePanelForm
         Dim selectedDay As Integer = CInt(selectedDate.DayOfWeek)
         Dim dateStamp As String = selectedDate.ToString("yyyy-MM-dd")
         Dim displayDate As String = selectedDate.ToString("MMMM dd, yyyy")
-        Dim currentDate As String = SystemClock.Now.Date.ToString("yyyy-MM-dd")
+        Dim todayStamp As String = SystemClock.Now.Date.ToString("yyyy-MM-dd")
         Dim currentTime As String = SystemClock.Now.ToString("HH:mm")
 
         Dim table As New DataTable()
-        Const sql As String = "SELECT " +
-                              "s.Student_Code AS StudentCode, " +
-                              "(s.LastName || ', ' || s.FirstName || CASE WHEN IFNULL(s.MiddleName, '') = '' THEN '' ELSE ' ' || s.MiddleName END) AS StudentName, " +
-                              "c.Code AS CourseCode, " +
-                              "c.Name AS CourseName, " +
-                              "cs.SectionName, " +
-                              "CASE sess.DayOfWeek " +
-                              "WHEN 0 THEN 'Sunday' WHEN 1 THEN 'Monday' WHEN 2 THEN 'Tuesday' WHEN 3 THEN 'Wednesday' " +
-                              "WHEN 4 THEN 'Thursday' WHEN 5 THEN 'Friday' ELSE 'Saturday' END AS SessionDay, " +
-                              "sess.StartTime AS SessionStart, " +
-                              "sess.EndTime AS SessionEnd, " +
-                              "@displayDate AS AttendanceDate, " +
-                              "IFNULL(a.TimeIn, '') AS TimeIn, " +
-                              "COALESCE(a.Status, 'Absent') AS Status " +
-                              "FROM ClassSession sess " +
-                              "JOIN ClassSection cs ON sess.ClassSection_ID = cs.ClassSection_ID " +
-                              "JOIN Course c ON cs.Course_ID = c.Course_ID " +
-                              "JOIN Enrollment e ON cs.ClassSection_ID = e.ClassSection_ID " +
-                              "JOIN Student s ON e.Student_ID = s.ID " +
-                              "LEFT JOIN Attendance a ON a.ClassSession_ID = sess.ClassSession_ID " +
-                              "AND a.Enrollment_ID = e.Enrollment_ID " +
-                              "AND a.Date_Stamp = @dateStamp " +
-                              "WHERE (@profId = 0 OR cs.Professor_ID = @profId) " +
-                              "AND sess.DayOfWeek = @dayOfWeek " +
-                              "AND (@courseId IS NULL OR cs.Course_ID = @courseId) " +
-                              "AND (@classSessionId IS NULL OR sess.ClassSession_ID = @classSessionId) " +
-                              "AND e.EnrollmentDate <= @dateStamp " +
-                              "AND ((@selectedDate < @currentDate) OR sess.EndTime <= @currentTime) " +
-                              "ORDER BY c.Code, cs.SectionName, sess.StartTime, s.LastName, s.FirstName"
+        Const sql As String = "WITH session_scope AS (" &
+                              "    SELECT sess.ClassSession_ID, cs.ClassSection_ID, c.Code AS CourseCode, c.Name AS CourseName, cs.SectionName, " &
+                              "           CASE sess.DayOfWeek WHEN 0 THEN 'Sunday' WHEN 1 THEN 'Monday' WHEN 2 THEN 'Tuesday' WHEN 3 THEN 'Wednesday' WHEN 4 THEN 'Thursday' WHEN 5 THEN 'Friday' ELSE 'Saturday' END AS SessionDay, " &
+                              "           sess.DayOfWeek, sess.StartTime, sess.EndTime, " &
+                              "           CASE WHEN @selectedDate < @today THEN 1 WHEN @selectedDate > @today THEN 0 WHEN sess.EndTime <= @currentTime THEN 1 ELSE 0 END AS IsFinished " &
+                              "    FROM ClassSession sess " &
+                              "    JOIN ClassSection cs ON sess.ClassSection_ID = cs.ClassSection_ID " &
+                              "    JOIN Course c ON cs.Course_ID = c.Course_ID " &
+                              "    WHERE (@profId = 0 OR cs.Professor_ID = @profId) " &
+                              "    AND sess.DayOfWeek = @dayOfWeek " &
+                              "    AND (@courseId IS NULL OR cs.Course_ID = @courseId) " &
+                              "    AND (@classSessionId IS NULL OR sess.ClassSession_ID = @classSessionId) " &
+                              ") " &
+                              "SELECT ss.CourseCode, ss.CourseName, ss.SectionName, ss.SessionDay, ss.StartTime AS SessionStart, ss.EndTime AS SessionEnd, @displayDate AS AttendanceDate, " &
+                              "       s.Student_Code AS StudentCode, " &
+                              "       (s.LastName || ', ' || s.FirstName || CASE WHEN IFNULL(s.MiddleName, '') = '' THEN '' ELSE ' ' || s.MiddleName END) AS StudentName, " &
+                              "       IFNULL(a.TimeIn, '') AS TimeIn, COALESCE(a.Status, 'Absent') AS Status " &
+                              "FROM session_scope ss " &
+                              "JOIN Enrollment e ON ss.ClassSection_ID = e.ClassSection_ID " &
+                              "JOIN Student s ON e.Student_ID = s.ID " &
+                              "LEFT JOIN Attendance a ON a.ClassSession_ID = ss.ClassSession_ID AND a.Enrollment_ID = e.Enrollment_ID AND a.Date_Stamp = @dateStamp " &
+                              "WHERE ss.IsFinished = 1 AND e.EnrollmentDate <= @dateStamp " &
+                              "UNION ALL " &
+                              "SELECT ss.CourseCode, ss.CourseName, ss.SectionName, ss.SessionDay, ss.StartTime AS SessionStart, ss.EndTime AS SessionEnd, @displayDate AS AttendanceDate, " &
+                              "       s.Student_Code AS StudentCode, " &
+                              "       (s.LastName || ', ' || s.FirstName || CASE WHEN IFNULL(s.MiddleName, '') = '' THEN '' ELSE ' ' || s.MiddleName END) AS StudentName, " &
+                              "       IFNULL(a.TimeIn, '') AS TimeIn, a.Status AS Status " &
+                              "FROM session_scope ss " &
+                              "JOIN Attendance a ON a.ClassSession_ID = ss.ClassSession_ID AND a.Date_Stamp = @dateStamp " &
+                              "JOIN Enrollment e ON a.Enrollment_ID = e.Enrollment_ID AND e.EnrollmentDate <= @dateStamp " &
+                              "JOIN Student s ON e.Student_ID = s.ID " &
+                              "WHERE ss.IsFinished = 0 " &
+                              "ORDER BY CourseCode, SectionName, SessionStart, StudentName"
 
         Using cmd As New SqliteCommand(sql, sqlconn)
             cmd.Parameters.AddWithValue("@profId", CurrentProfessorId)
@@ -188,7 +192,7 @@ Public Class ProfessorAttendancePanelForm
             cmd.Parameters.AddWithValue("@displayDate", displayDate)
             cmd.Parameters.AddWithValue("@dayOfWeek", selectedDay)
             cmd.Parameters.AddWithValue("@selectedDate", dateStamp)
-            cmd.Parameters.AddWithValue("@currentDate", currentDate)
+            cmd.Parameters.AddWithValue("@today", todayStamp)
             cmd.Parameters.AddWithValue("@currentTime", currentTime)
 
             Dim courseParam As New SqliteParameter("@courseId", DbType.Int32)

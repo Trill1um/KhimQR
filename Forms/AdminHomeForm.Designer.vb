@@ -20,14 +20,13 @@ Partial Class AdminHomeForm
         titleLabel = New Label()
         adminButton = New Button()
         addButton = New Button()
-        attendanceButton = New Button()
         enrollmentButton = New Button()
         SuspendLayout()
         ' 
         ' titleLabel
         ' 
         titleLabel.AutoSize = True
-        titleLabel.Font = New Font("Segoe UI", 36.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        titleLabel.Font = New Font("Segoe UI", 36F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
         titleLabel.Location = New Point(323, 35)
         titleLabel.Name = "titleLabel"
         titleLabel.Size = New Size(387, 81)
@@ -37,8 +36,8 @@ Partial Class AdminHomeForm
         ' 
         ' adminButton
         ' 
-        adminButton.Font = New Font("Segoe UI", 12.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        adminButton.Location = New Point(151, 179)
+        adminButton.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        adminButton.Location = New Point(368, 149)
         adminButton.Name = "adminButton"
         adminButton.Size = New Size(277, 68)
         adminButton.TabIndex = 1
@@ -47,28 +46,18 @@ Partial Class AdminHomeForm
         ' 
         ' addButton
         ' 
-        addButton.Font = New Font("Segoe UI", 12.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        addButton.Location = New Point(563, 179)
+        addButton.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        addButton.Location = New Point(368, 340)
         addButton.Name = "addButton"
         addButton.Size = New Size(277, 68)
         addButton.TabIndex = 2
         addButton.Text = "Add Data"
         addButton.UseVisualStyleBackColor = True
         ' 
-        ' attendanceButton
-        ' 
-        attendanceButton.Font = New Font("Segoe UI", 12.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        attendanceButton.Location = New Point(563, 275)
-        attendanceButton.Name = "attendanceButton"
-        attendanceButton.Size = New Size(277, 68)
-        attendanceButton.TabIndex = 3
-        attendanceButton.Text = "Check Attendance"
-        attendanceButton.UseVisualStyleBackColor = True
-        ' 
         ' enrollmentButton
         ' 
-        enrollmentButton.Font = New Font("Segoe UI", 12.0F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
-        enrollmentButton.Location = New Point(151, 275)
+        enrollmentButton.Font = New Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, CByte(0))
+        enrollmentButton.Location = New Point(368, 245)
         enrollmentButton.Name = "enrollmentButton"
         enrollmentButton.Size = New Size(277, 68)
         enrollmentButton.TabIndex = 4
@@ -77,11 +66,10 @@ Partial Class AdminHomeForm
         ' 
         ' AdminHomeForm
         ' 
-        AutoScaleDimensions = New SizeF(8.0F, 20.0F)
+        AutoScaleDimensions = New SizeF(8F, 20F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(1004, 450)
         Controls.Add(enrollmentButton)
-        Controls.Add(attendanceButton)
         Controls.Add(addButton)
         Controls.Add(adminButton)
         Controls.Add(titleLabel)
@@ -96,6 +84,5 @@ Partial Class AdminHomeForm
     Friend WithEvents titleLabel As Label
     Friend WithEvents adminButton As Button
     Friend WithEvents addButton As Button
-    Friend WithEvents attendanceButton As Button
     Friend WithEvents enrollmentButton As Button
 End Class

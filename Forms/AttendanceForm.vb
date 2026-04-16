@@ -14,6 +14,20 @@ Public Class AttendanceForm
     Private lastHandledAtUtc As DateTime = DateTime.MinValue
     Private isShowingMessage As Boolean
 
+    Private Sub CleanupResources()
+        stopCamera()
+        latestFrame?.Dispose()
+        latestFrame = Nothing
+        If qrDetector IsNot Nothing Then
+            qrDetector.Dispose()
+        End If
+    End Sub
+
+    Protected Overrides Sub OnHandleDestroyed(e As EventArgs)
+        CleanupResources()
+        MyBase.OnHandleDestroyed(e)
+    End Sub
+
     Private Sub Form2_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         Dim panelTest As New Panel() With {.Dock = DockStyle.Top, .Height = 40, .BackColor = Color.LightYellow}
         Dim chkOverride As New CheckBox() With {.Text = "Override Time:", .Location = New System.Drawing.Point(10, 10), .AutoSize = True}
@@ -335,9 +349,6 @@ Public Class AttendanceForm
 
     Private Sub Form2_FormClosing(sender As Object, e As FormClosingEventArgs) Handles MyBase.FormClosing
         stopCamera()
-        latestFrame?.Dispose()
-        latestFrame = Nothing
-        qrDetector.Dispose()
     End Sub
 
     Private Class AttendanceScanInfo

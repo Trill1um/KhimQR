@@ -13,10 +13,6 @@ Public Class AdminHomeForm
         RaiseEvent ShowAddRequested(Me, EventArgs.Empty)
     End Sub
 
-    Private Sub attendanceButton_Click(sender As Object, e As EventArgs) Handles attendanceButton.Click
-        RaiseEvent ShowAttendanceRequested(Me, EventArgs.Empty)
-    End Sub
-
     Private Sub enrollmentButton_Click(sender As Object, e As EventArgs) Handles enrollmentButton.Click
         RaiseEvent ShowEnrollmentRequested(Me, EventArgs.Empty)
     End Sub
