@@ -19,6 +19,7 @@ Partial Class AdminForm
     Private Sub InitializeComponent()
         refreshButton = New Button()
         resetButton = New Button()
+        simplifiedViewCheck = New CheckBox()
         tabControl = New TabControl()
         profPage = New TabPage()
         profGrid = New DataGridView()
@@ -69,6 +70,16 @@ Partial Class AdminForm
         resetButton.Text = "Reset DB"
         resetButton.UseVisualStyleBackColor = True
         ' 
+        ' simplifiedViewCheck
+        ' 
+        simplifiedViewCheck.AutoSize = True
+        simplifiedViewCheck.Location = New Point(275, 18)
+        simplifiedViewCheck.Name = "simplifiedViewCheck"
+        simplifiedViewCheck.Size = New Size(131, 24)
+        simplifiedViewCheck.TabIndex = 2
+        simplifiedViewCheck.Text = "Simplified View"
+        simplifiedViewCheck.UseVisualStyleBackColor = True
+        ' 
         ' tabControl
         ' 
         tabControl.Anchor = AnchorStyles.Top Or AnchorStyles.Bottom Or AnchorStyles.Left Or AnchorStyles.Right
@@ -83,7 +94,7 @@ Partial Class AdminForm
         tabControl.Name = "tabControl"
         tabControl.SelectedIndex = 0
         tabControl.Size = New Size(980, 388)
-        tabControl.TabIndex = 2
+        tabControl.TabIndex = 3
         ' 
         ' profPage
         ' 
@@ -238,6 +249,7 @@ Partial Class AdminForm
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(1004, 450)
         Controls.Add(tabControl)
+        Controls.Add(simplifiedViewCheck)
         Controls.Add(resetButton)
         Controls.Add(refreshButton)
         Name = "AdminForm"
@@ -259,10 +271,12 @@ Partial Class AdminForm
         attendancePage.ResumeLayout(False)
         CType(attendanceGrid, ComponentModel.ISupportInitialize).EndInit()
         ResumeLayout(False)
+        PerformLayout()
     End Sub
 
     Friend WithEvents refreshButton As Button
     Friend WithEvents resetButton As Button
+    Friend WithEvents simplifiedViewCheck As CheckBox
     Friend WithEvents tabControl As TabControl
     Friend WithEvents profPage As TabPage
     Friend WithEvents coursePage As TabPage

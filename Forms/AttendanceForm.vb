@@ -129,7 +129,6 @@ Public Class AttendanceForm
                                 "LEFT JOIN Enrollment e ON c.ClassSection_ID = e.ClassSection_ID AND e.Student_ID = @studentId AND e.EnrollmentDate <= @dateStamp " &
                                 "WHERE cs.DayOfWeek = @dow AND cs.StartTime <= @time AND cs.EndTime >= @time AND c.Professor_ID = @profId " &
                                 "ORDER BY e.Enrollment_ID DESC" ' Push the actual enrollment to the top of the results if it exists
-
             Using cmd As New SqliteCommand(sql, sqlconn)
                 cmd.Parameters.AddWithValue("@dow", currentDayOfWeek)
                 cmd.Parameters.AddWithValue("@time", currentTime)
@@ -163,7 +162,11 @@ Public Class AttendanceForm
             End If
 
             If enrollmentId = 0 Then
-                Label7.Text = "Not Enrolled"
+                MsgBox($"Not Enrolled in {courseName} / {sectionName}")
+                TextBox1.Text = student.Student_Code
+                TextBox2.Text = BuildDisplayName(student.FirstName, student.MiddleName, student.LastName)
+                TextBox4.Text = courseName
+                TextBox3.Text = sectionName
                 lastHandledStudentId = decoded
                 lastHandledAtUtc = DateTime.UtcNow
                 Return
