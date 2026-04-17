@@ -124,7 +124,12 @@ Public Class MainForm
     End Sub
 
     Private Sub UpdateHeader(pageText As String)
+        If (currentRole = UserRole.None) Then
+            currentUserLabel.Text = ""
+        Else
+            currentUserLabel.Text = $"Logged in as: {currentDisplayName}"
+        End If
         currentPageLabel.Text = pageText
-        currentUserLabel.Text = $"Logged in as: {currentDisplayName}"
     End Sub
+
 End Class

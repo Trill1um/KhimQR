@@ -52,7 +52,7 @@ Partial Class MainForm
         ' currentUserLabel
         ' 
         currentUserLabel.AutoSize = True
-        currentUserLabel.Font = New Font("Segoe UI", 12.0F, FontStyle.Bold)
+        currentUserLabel.Font = New Font("Segoe UI", 12F, FontStyle.Bold)
         currentUserLabel.Location = New Point(407, 14)
         currentUserLabel.Name = "currentUserLabel"
         currentUserLabel.Size = New Size(193, 28)
@@ -62,7 +62,7 @@ Partial Class MainForm
         ' currentPageLabel
         ' 
         currentPageLabel.AutoSize = True
-        currentPageLabel.Font = New Font("Segoe UI", 12.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        currentPageLabel.Font = New Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         currentPageLabel.Location = New Point(124, 14)
         currentPageLabel.Name = "currentPageLabel"
         currentPageLabel.Size = New Size(68, 28)
@@ -88,7 +88,7 @@ Partial Class MainForm
         ' 
         ' MainForm
         ' 
-        AutoScaleDimensions = New SizeF(8.0F, 20.0F)
+        AutoScaleDimensions = New SizeF(8F, 20F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(1004, 506)
         Controls.Add(pageHostPanel)
