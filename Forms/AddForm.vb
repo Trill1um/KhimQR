@@ -35,6 +35,7 @@ Partial Class AddForm
                 AddField("FirstName")
                 AddField("MiddleName")
                 AddField("LastName")
+                AddField("Password", passwordChar:=True)
             Case "Course"
                 AddField("Code")
                 AddField("Name")
@@ -52,7 +53,7 @@ Partial Class AddForm
         End Select
     End Sub
 
-    Private Sub AddField(caption As String, Optional defaultValue As String = "", Optional allowTypedSectionName As Boolean = False)
+    Private Sub AddField(caption As String, Optional defaultValue As String = "", Optional allowTypedSectionName As Boolean = False, Optional passwordChar As Boolean = False)
         Dim row As New Panel() With {.Width = 470, .Height = 56}
 
         Dim label As New Label() With {
@@ -112,7 +113,7 @@ Partial Class AddForm
                 "Course_ID")
         ElseIf key.Equals("Professor_ID", StringComparison.OrdinalIgnoreCase) Then
             inputControl = CreateLookupCombo(
-                "SELECT Professor_ID, (FirstName || ' ' || LastName) AS DisplayText FROM Professor ORDER BY LastName, FirstName",
+                "SELECT Professor_ID, FirstName || ' ' || CASE WHEN IFNULL(TRIM(MiddleName), '') = '' THEN '' ELSE SUBSTR(TRIM(MiddleName), 1, 1) || '. ' END || LastName AS DisplayText FROM Professor ORDER BY LastName, FirstName",
                 "DisplayText",
                 "Professor_ID")
         ElseIf key.Equals("SectionName", StringComparison.OrdinalIgnoreCase) Then
@@ -122,12 +123,16 @@ Partial Class AddForm
                 "SectionName",
                 If(allowTypedSectionName, ComboBoxStyle.DropDown, ComboBoxStyle.DropDownList))
         Else
-            inputControl = New TextBox() With {
+            Dim textBox As New TextBox() With {
                 .Left = 0,
                 .Top = 22,
                 .Width = 460,
                 .Text = defaultValue
             }
+            If passwordChar Then
+                textBox.UseSystemPasswordChar = True
+            End If
+            inputControl = textBox
         End If
 
         row.Controls.Add(label)
@@ -179,7 +184,8 @@ Partial Class AddForm
                     professorRepository.Save(sqlconn, New Professor With {
                         .FirstName = GetRequired("FirstName"),
                         .MiddleName = GetOptional("MiddleName"),
-                        .LastName = GetRequired("LastName")
+                        .LastName = GetRequired("LastName"),
+                        .Password = GetRequired("Password")
                     })
 
                 Case "Course"

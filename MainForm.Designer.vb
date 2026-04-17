@@ -19,6 +19,7 @@ Partial Class MainForm
     Private Sub InitializeComponent()
         topPanel = New Panel()
         logoutButton = New Button()
+        currentUserLabel = New Label()
         currentPageLabel = New Label()
         homeButton = New Button()
         pageHostPanel = New Panel()
@@ -28,6 +29,7 @@ Partial Class MainForm
         ' topPanel
         ' 
         topPanel.Controls.Add(logoutButton)
+        topPanel.Controls.Add(currentUserLabel)
         topPanel.Controls.Add(currentPageLabel)
         topPanel.Controls.Add(homeButton)
         topPanel.Dock = DockStyle.Top
@@ -47,10 +49,20 @@ Partial Class MainForm
         logoutButton.UseVisualStyleBackColor = True
         logoutButton.Visible = False
         ' 
+        ' currentUserLabel
+        ' 
+        currentUserLabel.AutoSize = True
+        currentUserLabel.Font = New Font("Segoe UI", 12.0F, FontStyle.Bold)
+        currentUserLabel.Location = New Point(407, 14)
+        currentUserLabel.Name = "currentUserLabel"
+        currentUserLabel.Size = New Size(193, 28)
+        currentUserLabel.TabIndex = 2
+        currentUserLabel.Text = "Logged in as: None"
+        ' 
         ' currentPageLabel
         ' 
         currentPageLabel.AutoSize = True
-        currentPageLabel.Font = New Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
+        currentPageLabel.Font = New Font("Segoe UI", 12.0F, FontStyle.Bold, GraphicsUnit.Point, CByte(0))
         currentPageLabel.Location = New Point(124, 14)
         currentPageLabel.Name = "currentPageLabel"
         currentPageLabel.Size = New Size(68, 28)
@@ -76,7 +88,7 @@ Partial Class MainForm
         ' 
         ' MainForm
         ' 
-        AutoScaleDimensions = New SizeF(8F, 20F)
+        AutoScaleDimensions = New SizeF(8.0F, 20.0F)
         AutoScaleMode = AutoScaleMode.Font
         ClientSize = New Size(1004, 506)
         Controls.Add(pageHostPanel)
@@ -91,6 +103,7 @@ Partial Class MainForm
 
     Friend WithEvents topPanel As Panel
     Friend WithEvents currentPageLabel As Label
+    Friend WithEvents currentUserLabel As Label
     Friend WithEvents homeButton As Button
     Friend WithEvents logoutButton As Button
     Friend WithEvents pageHostPanel As Panel

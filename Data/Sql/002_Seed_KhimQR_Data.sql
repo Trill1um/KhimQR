@@ -1,9 +1,10 @@
--- Seed Professors (5)
-INSERT OR IGNORE INTO Professor (Professor_ID, FirstName, MiddleName, LastName) VALUES (1, 'Robert', 'A.', 'Johnson');
-INSERT OR IGNORE INTO Professor (Professor_ID, FirstName, MiddleName, LastName) VALUES (2, 'Maria', 'C.', 'Santos');
-INSERT OR IGNORE INTO Professor (Professor_ID, FirstName, MiddleName, LastName) VALUES (3, 'Daniel', 'M.', 'Reyes');
-INSERT OR IGNORE INTO Professor (Professor_ID, FirstName, MiddleName, LastName) VALUES (4, 'Angela', 'P.', 'Garcia');
-INSERT OR IGNORE INTO Professor (Professor_ID, FirstName, MiddleName, LastName) VALUES (5, 'Victor', 'L.', 'Cruz');
+-- Seed Professors (6)
+INSERT OR IGNORE INTO Professor (Professor_ID, FirstName, MiddleName, LastName, Password, IsAdmin) VALUES (1, 'Robert', 'Alexander', 'Johnson', 'Robert123', 0);
+INSERT OR IGNORE INTO Professor (Professor_ID, FirstName, MiddleName, LastName, Password, IsAdmin) VALUES (2, 'Maria', 'Carter', 'Santos', 'Maria123', 0);
+INSERT OR IGNORE INTO Professor (Professor_ID, FirstName, MiddleName, LastName, Password, IsAdmin) VALUES (3, 'Daniel', 'Miguel', 'Reyes', 'Daniel123', 0);
+INSERT OR IGNORE INTO Professor (Professor_ID, FirstName, MiddleName, LastName, Password, IsAdmin) VALUES (4, 'Angela', 'Patricia', 'Garcia', 'Angela123', 0);
+INSERT OR IGNORE INTO Professor (Professor_ID, FirstName, MiddleName, LastName, Password, IsAdmin) VALUES (5, 'Victor', 'Luis', 'Cruz', 'Victor123', 0);
+INSERT OR IGNORE INTO Professor (Professor_ID, FirstName, MiddleName, LastName, Password, IsAdmin) VALUES (6, 'Admin', NULL, 'Account', 'Admin123', 1);
 
 -- Seed Courses (10 total)
 INSERT OR IGNORE INTO Course (Course_ID, Code, Name) VALUES (1, 'CS101', 'Introduction to Programming');
@@ -40,11 +41,11 @@ SELECT
         ELSE 'Ava'
     END,
     CASE (n % 5)
-        WHEN 0 THEN 'A.'
-        WHEN 1 THEN 'B.'
-        WHEN 2 THEN 'C.'
-        WHEN 3 THEN 'D.'
-        ELSE 'E.'
+        WHEN 0 THEN 'Anderson'
+        WHEN 1 THEN 'Bernard'
+        WHEN 2 THEN 'Carter'
+        WHEN 3 THEN 'Daniel'
+        ELSE 'Edward'
     END,
     CASE (n % 12)
         WHEN 0 THEN 'Lopez'

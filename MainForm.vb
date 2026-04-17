@@ -8,10 +8,12 @@ Public Class MainForm
     Private pageManager As PageNavigationManager
     Private currentRole As UserRole = UserRole.None
     Private currentProfessorId As Integer = 0
+    Private currentDisplayName As String = "Not signed in"
 
     Private Sub MainForm_Load(sender As Object, e As EventArgs) Handles MyBase.Load
         pageManager = New PageNavigationManager(pageHostPanel)
         logoutButton.Visible = False
+        UpdateHeader("Login")
         ShowLoginPage()
     End Sub
 
@@ -22,6 +24,7 @@ Public Class MainForm
     Private Sub logoutButton_Click(sender As Object, e As EventArgs) Handles logoutButton.Click
         currentRole = UserRole.None
         currentProfessorId = 0
+        currentDisplayName = "Not signed in"
         ShowLoginPage()
     End Sub
 
@@ -30,11 +33,13 @@ Public Class MainForm
         AddHandler loginPage.LoginSucceeded, AddressOf RoleLogin_LoginSucceeded
 
         pageManager.Navigate(loginPage)
-        currentPageLabel.Text = "Login"
+        UpdateHeader("Login")
         logoutButton.Visible = False
     End Sub
 
     Private Sub RoleLogin_LoginSucceeded(sender As Object, e As RoleLoginEventArgs)
+        currentDisplayName = e.SelectedDisplayName
+
         If e.IsAdmin Then
             currentRole = UserRole.Admin
             currentProfessorId = 0
@@ -57,7 +62,7 @@ Public Class MainForm
                 AddHandler adminHome.ShowEnrollmentRequested, AddressOf Home_ShowEnrollmentRequested
                 AddHandler adminHome.ShowProfessorPanelRequested, AddressOf Home_ShowProfessorPanelRequested
                 pageManager.Navigate(adminHome)
-                currentPageLabel.Text = "Admin Home"
+                UpdateHeader("Admin Home")
 
             Case UserRole.Professor
                 AttendanceAutoAbsentService.QueueFinalizeProfessorAbsences(currentProfessorId, SystemClock.Today)
@@ -67,7 +72,7 @@ Public Class MainForm
                 AddHandler professorHome.ShowProfessorPanelRequested, AddressOf Home_ShowProfessorPanelRequested
                 AddHandler professorHome.ShowProfessorAttendancePanelRequested, AddressOf Home_ShowProfessorAttendancePanelRequested
                 pageManager.Navigate(professorHome)
-                currentPageLabel.Text = "Professor Home"
+                UpdateHeader("Professor Home")
 
             Case Else
                 ShowLoginPage()
@@ -76,17 +81,17 @@ Public Class MainForm
 
     Private Sub Home_ShowAdminRequested(sender As Object, e As EventArgs)
         pageManager.Navigate(New AdminForm())
-        currentPageLabel.Text = "Admin"
+        UpdateHeader("Admin")
     End Sub
 
     Private Sub Home_ShowAddRequested(sender As Object, e As EventArgs)
         pageManager.Navigate(New AddForm())
-        currentPageLabel.Text = "Add Data"
+        UpdateHeader("Add Data")
     End Sub
 
     Private Sub Home_ShowEnrollmentRequested(sender As Object, e As EventArgs)
         pageManager.Navigate(New EnrollmentForm())
-        currentPageLabel.Text = "Enrollment"
+        UpdateHeader("Enrollment")
     End Sub
 
     Private Sub Home_ShowProfessorPanelRequested(sender As Object, e As EventArgs)
@@ -94,7 +99,7 @@ Public Class MainForm
             .CurrentProfessorId = currentProfessorId
         }
         pageManager.Navigate(panel)
-        currentPageLabel.Text = "Professor Panel"
+        UpdateHeader("Professor Panel")
     End Sub
 
     Private Sub Home_ShowAttendanceRequested(sender As Object, e As EventArgs)
@@ -107,7 +112,7 @@ Public Class MainForm
             .CurrentProfessorId = currentProfessorId
         }
         pageManager.Navigate(scanner)
-        currentPageLabel.Text = "Attendance"
+        UpdateHeader("Attendance")
     End Sub
 
     Private Sub Home_ShowProfessorAttendancePanelRequested(sender As Object, e As EventArgs)
@@ -115,6 +120,11 @@ Public Class MainForm
             .CurrentProfessorId = currentProfessorId
         }
         pageManager.Navigate(attendancePanel)
-        currentPageLabel.Text = "Attendance Panel"
+        UpdateHeader("Attendance Panel")
+    End Sub
+
+    Private Sub UpdateHeader(pageText As String)
+        currentPageLabel.Text = pageText
+        currentUserLabel.Text = $"Logged in as: {currentDisplayName}"
     End Sub
 End Class

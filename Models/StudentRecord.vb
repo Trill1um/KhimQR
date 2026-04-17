@@ -11,6 +11,8 @@ Public Class Professor
     Public Property FirstName As String
     Public Property MiddleName As String
     Public Property LastName As String
+    Public Property Password As String
+    Public Property IsAdmin As Boolean
 End Class
 
 Public Class Course

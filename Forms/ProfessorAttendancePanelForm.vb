@@ -167,7 +167,7 @@ Public Class ProfessorAttendancePanelForm
                               ") " &
                               "SELECT ss.CourseCode, ss.CourseName, ss.SectionName, ss.SessionDay, ss.StartTime AS SessionStart, ss.EndTime AS SessionEnd, @displayDate AS AttendanceDate, " &
                               "       s.Student_Code AS StudentCode, " &
-                              "       (s.LastName || ', ' || s.FirstName || CASE WHEN IFNULL(s.MiddleName, '') = '' THEN '' ELSE ' ' || s.MiddleName END) AS StudentName, " &
+                              "       (s.FirstName || ' ' || CASE WHEN IFNULL(TRIM(s.MiddleName), '') = '' THEN '' ELSE SUBSTR(TRIM(s.MiddleName), 1, 1) || '. ' END || s.LastName) AS StudentName, " &
                               "       IFNULL(a.TimeIn, '') AS TimeIn, COALESCE(a.Status, 'Absent') AS Status " &
                               "FROM session_scope ss " &
                               "JOIN Enrollment e ON ss.ClassSection_ID = e.ClassSection_ID " &
@@ -177,7 +177,7 @@ Public Class ProfessorAttendancePanelForm
                               "UNION ALL " &
                               "SELECT ss.CourseCode, ss.CourseName, ss.SectionName, ss.SessionDay, ss.StartTime AS SessionStart, ss.EndTime AS SessionEnd, @displayDate AS AttendanceDate, " &
                               "       s.Student_Code AS StudentCode, " &
-                              "       (s.LastName || ', ' || s.FirstName || CASE WHEN IFNULL(s.MiddleName, '') = '' THEN '' ELSE ' ' || s.MiddleName END) AS StudentName, " &
+                              "       (s.FirstName || ' ' || CASE WHEN IFNULL(TRIM(s.MiddleName), '') = '' THEN '' ELSE SUBSTR(TRIM(s.MiddleName), 1, 1) || '. ' END || s.LastName) AS StudentName, " &
                               "       IFNULL(a.TimeIn, '') AS TimeIn, a.Status AS Status " &
                               "FROM session_scope ss " &
                               "JOIN Attendance a ON a.ClassSession_ID = ss.ClassSession_ID AND a.Date_Stamp = @dateStamp " &

@@ -99,7 +99,7 @@ Public Class AdminForm
 
     Private Sub LoadProf(simplified As Boolean)
         Dim sql As String = If(simplified,
-            "SELECT FirstName || ' ' || COALESCE(MiddleName || ' ', '') || LastName AS ProfessorName FROM Professor ORDER BY LastName, FirstName",
+            "SELECT CASE WHEN IsAdmin = 1 THEN 'Admin' ELSE FirstName || ' ' || CASE WHEN IFNULL(TRIM(MiddleName), '') = '' THEN '' ELSE SUBSTR(TRIM(MiddleName), 1, 1) || '. ' END || LastName END AS ProfessorName, Password, IsAdmin FROM Professor ORDER BY IsAdmin DESC, LastName, FirstName",
             "SELECT * FROM Professor")
         BindTable(profGrid, LoadTable(sql))
     End Sub
@@ -120,28 +120,28 @@ Public Class AdminForm
 
     Private Sub LoadClassSection(simplified As Boolean)
         Dim sql As String = If(simplified,
-            "SELECT c.Code AS CourseCode, c.Name AS CourseName, p.FirstName || ' ' || COALESCE(p.MiddleName || ' ', '') || p.LastName AS ProfessorName, cs.SectionName, cs.GracePeriodMinutes FROM ClassSection cs JOIN Course c ON cs.Course_ID = c.Course_ID JOIN Professor p ON cs.Professor_ID = p.Professor_ID ORDER BY c.Code, cs.SectionName",
+            "SELECT c.Code AS CourseCode, c.Name AS CourseName, p.FirstName || ' ' || CASE WHEN IFNULL(TRIM(p.MiddleName), '') = '' THEN '' ELSE SUBSTR(TRIM(p.MiddleName), 1, 1) || '. ' END || p.LastName AS ProfessorName, cs.SectionName, cs.GracePeriodMinutes FROM ClassSection cs JOIN Course c ON cs.Course_ID = c.Course_ID JOIN Professor p ON cs.Professor_ID = p.Professor_ID ORDER BY c.Code, cs.SectionName",
             "SELECT * FROM ClassSection")
         BindTable(classSectionGrid, LoadTable(sql))
     End Sub
 
     Private Sub LoadClassSession(simplified As Boolean)
         Dim sql As String = If(simplified,
-            "SELECT c.Code AS CourseCode, c.Name AS CourseName, p.FirstName || ' ' || COALESCE(p.MiddleName || ' ', '') || p.LastName AS ProfessorName, cs.SectionName, CASE sess.DayOfWeek WHEN 0 THEN 'Sunday' WHEN 1 THEN 'Monday' WHEN 2 THEN 'Tuesday' WHEN 3 THEN 'Wednesday' WHEN 4 THEN 'Thursday' WHEN 5 THEN 'Friday' ELSE 'Saturday' END AS DayOfWeek, sess.StartTime, sess.EndTime FROM ClassSession sess JOIN ClassSection cs ON sess.ClassSection_ID = cs.ClassSection_ID JOIN Course c ON cs.Course_ID = c.Course_ID JOIN Professor p ON cs.Professor_ID = p.Professor_ID ORDER BY c.Code, cs.SectionName, sess.DayOfWeek, sess.StartTime",
+            "SELECT c.Code AS CourseCode, c.Name AS CourseName, p.FirstName || ' ' || CASE WHEN IFNULL(TRIM(p.MiddleName), '') = '' THEN '' ELSE SUBSTR(TRIM(p.MiddleName), 1, 1) || '. ' END || p.LastName AS ProfessorName, cs.SectionName, CASE sess.DayOfWeek WHEN 0 THEN 'Sunday' WHEN 1 THEN 'Monday' WHEN 2 THEN 'Tuesday' WHEN 3 THEN 'Wednesday' WHEN 4 THEN 'Thursday' WHEN 5 THEN 'Friday' ELSE 'Saturday' END AS DayOfWeek, sess.StartTime, sess.EndTime FROM ClassSession sess JOIN ClassSection cs ON sess.ClassSection_ID = cs.ClassSection_ID JOIN Course c ON cs.Course_ID = c.Course_ID JOIN Professor p ON cs.Professor_ID = p.Professor_ID ORDER BY c.Code, cs.SectionName, sess.DayOfWeek, sess.StartTime",
             "SELECT * FROM ClassSession")
         BindTable(classSessionGrid, LoadTable(sql))
     End Sub
 
     Private Sub LoadEnrollment(simplified As Boolean)
         Dim sql As String = If(simplified,
-            "SELECT s.Student_Code, s.FirstName || ' ' || COALESCE(s.MiddleName || ' ', '') || s.LastName AS StudentName, c.Code AS CourseCode, c.Name AS CourseName, cs.SectionName, e.EnrollmentDate FROM Enrollment e JOIN Student s ON e.Student_ID = s.ID JOIN ClassSection cs ON e.ClassSection_ID = cs.ClassSection_ID JOIN Course c ON cs.Course_ID = c.Course_ID ORDER BY s.LastName, s.FirstName, c.Code, cs.SectionName",
+            "SELECT s.Student_Code, s.FirstName || ' ' || CASE WHEN IFNULL(TRIM(s.MiddleName), '') = '' THEN '' ELSE SUBSTR(TRIM(s.MiddleName), 1, 1) || '. ' END || s.LastName AS StudentName, c.Code AS CourseCode, c.Name AS CourseName, cs.SectionName, e.EnrollmentDate FROM Enrollment e JOIN Student s ON e.Student_ID = s.ID JOIN ClassSection cs ON e.ClassSection_ID = cs.ClassSection_ID JOIN Course c ON cs.Course_ID = c.Course_ID ORDER BY s.LastName, s.FirstName, c.Code, cs.SectionName",
             "SELECT * FROM Enrollment")
         BindTable(enrollmentGrid, LoadTable(sql))
     End Sub
 
     Private Sub LoadAttendance(simplified As Boolean)
         Dim sql As String = If(simplified,
-            "SELECT s.Student_Code, s.FirstName || ' ' || COALESCE(s.MiddleName || ' ', '') || s.LastName AS StudentName, c.Code AS CourseCode, c.Name AS CourseName, cs.SectionName, sess.DayOfWeek, sess.StartTime, sess.EndTime, a.Date_Stamp, a.TimeIn, a.Status FROM Attendance a JOIN Enrollment e ON a.Enrollment_ID = e.Enrollment_ID JOIN Student s ON e.Student_ID = s.ID JOIN ClassSession sess ON a.ClassSession_ID = sess.ClassSession_ID JOIN ClassSection cs ON sess.ClassSection_ID = cs.ClassSection_ID JOIN Course c ON cs.Course_ID = c.Course_ID ORDER BY a.Date_Stamp DESC, c.Code, cs.SectionName, sess.StartTime",
+            "SELECT s.Student_Code, s.FirstName || ' ' || CASE WHEN IFNULL(TRIM(s.MiddleName), '') = '' THEN '' ELSE SUBSTR(TRIM(s.MiddleName), 1, 1) || '. ' END || s.LastName AS StudentName, c.Code AS CourseCode, c.Name AS CourseName, cs.SectionName, sess.DayOfWeek, sess.StartTime, sess.EndTime, a.Date_Stamp, a.TimeIn, a.Status FROM Attendance a JOIN Enrollment e ON a.Enrollment_ID = e.Enrollment_ID JOIN Student s ON e.Student_ID = s.ID JOIN ClassSession sess ON a.ClassSession_ID = sess.ClassSession_ID JOIN ClassSection cs ON sess.ClassSection_ID = cs.ClassSection_ID JOIN Course c ON cs.Course_ID = c.Course_ID ORDER BY a.Date_Stamp DESC, c.Code, cs.SectionName, sess.StartTime",
             "SELECT * FROM Attendance")
         BindTable(attendanceGrid, LoadTable(sql))
     End Sub

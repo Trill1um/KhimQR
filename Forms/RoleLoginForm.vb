@@ -20,14 +20,13 @@ Public Class RoleLoginForm
         choices.Columns.Add("DisplayText", GetType(String))
         choices.Columns.Add("IsAdmin", GetType(Boolean))
         choices.Columns.Add("Professor_ID", GetType(Integer))
+        choices.Columns.Add("Password", GetType(String))
 
-        choices.Rows.Add("Admin", True, DBNull.Value)
-
-        Const sql As String = "SELECT Professor_ID, FirstName || ' ' || LastName AS FullName FROM Professor ORDER BY LastName, FirstName"
+        Const sql As String = "SELECT Professor_ID, CASE WHEN IsAdmin = 1 THEN 'Admin' ELSE FirstName || ' ' || CASE WHEN IFNULL(TRIM(MiddleName), '') = '' THEN '' ELSE SUBSTR(TRIM(MiddleName), 1, 1) || '. ' END || LastName END AS DisplayText, Password, IsAdmin FROM Professor ORDER BY IsAdmin DESC, LastName, FirstName"
         Using cmd As New SqliteCommand(sql, sqlconn)
             Using reader = cmd.ExecuteReader()
                 While reader.Read()
-                    choices.Rows.Add(reader("FullName").ToString(), False, Convert.ToInt32(reader("Professor_ID")))
+                    choices.Rows.Add(reader("DisplayText").ToString(), Convert.ToBoolean(reader("IsAdmin")), Convert.ToInt32(reader("Professor_ID")), reader("Password").ToString())
                 End While
             End Using
         End Using
@@ -39,6 +38,8 @@ Public Class RoleLoginForm
         If roleComboBox.Items.Count > 0 Then
             roleComboBox.SelectedIndex = 0
         End If
+
+        passwordTextBox.Clear()
     End Sub
 
     Private Sub loginButton_Click(sender As Object, e As EventArgs) Handles loginButton.Click
@@ -48,14 +49,30 @@ Public Class RoleLoginForm
             Return
         End If
 
+        Dim enteredPassword = passwordTextBox.Text.Trim()
+        If String.IsNullOrWhiteSpace(enteredPassword) Then
+            MessageBox.Show("Please enter a password.", "Login", MessageBoxButtons.OK, MessageBoxIcon.Information)
+            passwordTextBox.Focus()
+            Return
+        End If
+
+        Dim storedPassword = selected("Password").ToString()
+        If Not String.Equals(storedPassword, enteredPassword, StringComparison.Ordinal) Then
+            MessageBox.Show("The password does not match the selected account.", "Login", MessageBoxButtons.OK, MessageBoxIcon.Warning)
+            passwordTextBox.SelectAll()
+            passwordTextBox.Focus()
+            Return
+        End If
+
         Dim isAdmin = Convert.ToBoolean(selected("IsAdmin"))
         Dim displayName = selected("DisplayText").ToString()
 
         Dim professorId As Integer? = Nothing
-        If Not isAdmin AndAlso selected("Professor_ID") IsNot DBNull.Value Then
+        If selected("Professor_ID") IsNot DBNull.Value Then
             professorId = Convert.ToInt32(selected("Professor_ID"))
         End If
 
+        MessageBox.Show($"Welcome, {displayName}!", "Login Successful", MessageBoxButtons.OK, MessageBoxIcon.Information)
         RaiseEvent LoginSucceeded(Me, New RoleLoginEventArgs(isAdmin, professorId, displayName))
     End Sub
 End Class

@@ -50,7 +50,7 @@ Public Class AttendanceForm
         AddHandler frameTimer.Tick, AddressOf FrameTimer_Tick
 
         If CurrentProfessorId > 0 Then
-            Using cmd As New SqliteCommand("SELECT FirstName || ' ' || LastName FROM Professor WHERE Professor_ID = @id", sqlconn)
+            Using cmd As New SqliteCommand("SELECT FirstName || ' ' || CASE WHEN IFNULL(TRIM(MiddleName), '') = '' THEN '' ELSE SUBSTR(TRIM(MiddleName), 1, 1) || '. ' END || LastName FROM Professor WHERE Professor_ID = @id", sqlconn)
                 cmd.Parameters.AddWithValue("@id", CurrentProfessorId)
                 Dim profName = Convert.ToString(cmd.ExecuteScalar())
                 Me.Text = "Scanner - Logged in as: Prof. " & profName

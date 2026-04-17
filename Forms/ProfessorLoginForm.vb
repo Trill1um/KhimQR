@@ -59,7 +59,7 @@ Public Class ProfessorLoginForm
         End If
 
         Dim dt As New DataTable()
-        Const sql As String = "SELECT Professor_ID, FirstName || ' ' || LastName AS FullName FROM Professor"
+        Const sql As String = "SELECT Professor_ID, FirstName || ' ' || CASE WHEN IFNULL(TRIM(MiddleName), '') = '' THEN '' ELSE SUBSTR(TRIM(MiddleName), 1, 1) || '. ' END || LastName AS FullName FROM Professor ORDER BY LastName, FirstName"
         Using cmd As New SqliteCommand(sql, sqlconn)
             Using reader = cmd.ExecuteReader()
                 dt.Load(reader)

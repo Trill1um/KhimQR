@@ -2,7 +2,9 @@ CREATE TABLE IF NOT EXISTS Professor (
     Professor_ID INTEGER PRIMARY KEY AUTOINCREMENT,
     FirstName TEXT NOT NULL,
     MiddleName TEXT,
-    LastName TEXT NOT NULL
+    LastName TEXT NOT NULL,
+    Password TEXT NOT NULL,
+    IsAdmin INTEGER NOT NULL DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS Course (

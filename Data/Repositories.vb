@@ -2,11 +2,13 @@ Imports Microsoft.Data.Sqlite
 
 Public Class ProfessorRepository
     Public Sub Save(connection As SqliteConnection, professor As Professor)
-        Const sql As String = "INSERT INTO Professor (FirstName, MiddleName, LastName) VALUES (@FirstName, @MiddleName, @LastName)"
+        Const sql As String = "INSERT INTO Professor (FirstName, MiddleName, LastName, Password, IsAdmin) VALUES (@FirstName, @MiddleName, @LastName, @Password, @IsAdmin)"
         Using cmd As New SqliteCommand(sql, connection)
             cmd.Parameters.AddWithValue("@FirstName", professor.FirstName)
             cmd.Parameters.AddWithValue("@MiddleName", If(professor.MiddleName, DBNull.Value))
             cmd.Parameters.AddWithValue("@LastName", professor.LastName)
+            cmd.Parameters.AddWithValue("@Password", professor.Password)
+            cmd.Parameters.AddWithValue("@IsAdmin", If(professor.IsAdmin, 1, 0))
             cmd.ExecuteNonQuery()
         End Using
     End Sub
